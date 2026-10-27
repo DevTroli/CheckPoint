@@ -1,0 +1,16 @@
+flowchart TD
+    M["Milestone Banco\nCONCLUÍDA"]
+    I1["Issue #1\nModelagem Redis\nDoD OK"]
+    I2["Issue #2\nConexão + Docker Compose\nConfiguração OK\nDocker local não disponível"]
+    I3["Issue #3\nRepositórios CRUD\nDoD OK"]
+    T["Testes automatizados\n11 passed"]
+    C["Commits publicados\n e2c5f9a → 028deb7"]
+    M --> I1
+    M --> I2
+    M --> I3
+    I3 --> T
+    M --> C
+    classDef ok fill:#d1fae5,stroke:#047857,color:#064e3b;
+    classDef note fill:#fef3c7,stroke:#b45309,color:#78350f;
+    class M,I1,I3,T,C ok;
+    class I2 note;
