@@ -74,6 +74,18 @@ class RepositorioJogo:
 
     def excluir(self, jogo_id: int) -> None:
         jogo = self.buscar_por_id(jogo_id)
+        registro_ids = self.cliente.smembers(chaves.registros_do_jogo(jogo_id))
+        for registro_id in registro_ids:
+            registro = self.cliente.hgetall(chaves.registro(int(registro_id)))
+            if registro:
+                self.cliente.delete(
+                    chaves.registro(int(registro_id)),
+                    chaves.indice_registro(int(registro["usuario_id"]), jogo_id),
+                )
+                self.cliente.srem(
+                    chaves.registros_do_usuario(int(registro["usuario_id"])),
+                    registro_id,
+                )
         self.cliente.delete(
             chaves.jogo(jogo_id),
             chaves.indice_nome_jogo(jogo["nome"]),

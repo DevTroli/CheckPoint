@@ -141,3 +141,29 @@ def test_registro_unico_por_usuario_e_jogo(repositorios):
     repo.criar(usuario_id=usuario["id"], jogo_id=jogo["id"])
     with pytest.raises(RecursoDuplicado):
         repo.criar(usuario_id=usuario["id"], jogo_id=jogo["id"])
+
+
+def test_excluir_jogo_remove_registros_e_indices_relacionados(repositorios):
+    usuario, jogo = criar_usuario_e_jogo(repositorios)
+    registro = repositorios["registros"].criar(usuario_id=usuario["id"], jogo_id=jogo["id"])
+
+    repositorios["jogos"].excluir(jogo["id"])
+
+    assert not repositorios["cliente"].exists(chaves.registro(registro["id"]))
+    assert not repositorios["cliente"].exists(chaves.indice_registro(usuario["id"], jogo["id"]))
+    assert not repositorios["cliente"].sismember(
+        chaves.registros_do_usuario(usuario["id"]), registro["id"]
+    )
+
+
+def test_excluir_usuario_remove_registros_e_indices_relacionados(repositorios):
+    usuario, jogo = criar_usuario_e_jogo(repositorios)
+    registro = repositorios["registros"].criar(usuario_id=usuario["id"], jogo_id=jogo["id"])
+
+    repositorios["usuarios"].excluir(usuario["id"])
+
+    assert not repositorios["cliente"].exists(chaves.registro(registro["id"]))
+    assert not repositorios["cliente"].exists(chaves.indice_registro(usuario["id"], jogo["id"]))
+    assert not repositorios["cliente"].sismember(
+        chaves.registros_do_jogo(jogo["id"]), registro["id"]
+    )
