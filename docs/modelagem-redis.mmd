@@ -1,0 +1,17 @@
+flowchart LR
+    U["usuario:{id}\nHASH\nnome_usuario, email, senha_hash"]
+    J["jogo:{id}\nHASH\nnome, categoria, lançamento"]
+    R["registro:{id}\nHASH\nprogresso, nota, status"]
+    UR["usuario:{id}:registros\nSET"]
+    JR["jogo:{id}:registros\nSET"]
+    IE["indice:usuario:email:{email}\nSTRING"]
+    IN["indice:usuario:nome:{nome}\nSTRING"]
+    IJ["indice:registro:{usuario_id}:{jogo_id}\nSTRING\nregistro único"]
+
+    U -->|possui| UR
+    J -->|recebe| JR
+    U -->|1:N| R
+    J -->|1:N| R
+    R -.->|indexa| IJ
+    U -.->|busca| IE
+    U -.->|busca| IN
