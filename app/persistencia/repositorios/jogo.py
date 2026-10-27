@@ -16,6 +16,8 @@ class RepositorioJogo:
     def criar(self, *, nome: str, categoria: str, data_lancamento: str,
               publicadora: str = "", desenvolvedora: str = "", descricao: str = "") -> dict[str, Any]:
         nome = normalizar_texto(nome)
+        if hasattr(data_lancamento, "isoformat"):
+            data_lancamento = data_lancamento.isoformat()
         if self.cliente.exists(chaves.indice_nome_jogo(nome)):
             raise RecursoDuplicado("O jogo já está cadastrado.")
         jogo_id = int(self.cliente.incr(chaves.sequencia("jogo")))
@@ -59,6 +61,8 @@ class RepositorioJogo:
         atual = self.buscar_por_id(jogo_id)
         permitidos = {"nome", "descricao", "categoria", "data_lancamento", "publicadora", "desenvolvedora"}
         alteracoes = {chave: valor for chave, valor in campos.items() if chave in permitidos}
+        if hasattr(alteracoes.get("data_lancamento"), "isoformat"):
+            alteracoes["data_lancamento"] = alteracoes["data_lancamento"].isoformat()
         if "nome" in alteracoes:
             novo_nome = normalizar_texto(str(alteracoes["nome"]))
             dono = self.cliente.get(chaves.indice_nome_jogo(novo_nome))

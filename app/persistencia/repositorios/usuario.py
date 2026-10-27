@@ -13,7 +13,7 @@ class RepositorioUsuario:
     def __init__(self, cliente: Redis):
         self.cliente = cliente
 
-    def criar(self, *, nome_usuario: str, email: str, senha_hash: str) -> dict[str, Any]:
+    def criar(self, *, nome_usuario: str, email: str, senha_hash: str, papel: str = "usuario") -> dict[str, Any]:
         nome_usuario = normalizar_texto(nome_usuario)
         email = email.strip().lower()
         if self.cliente.exists(chaves.indice_email(email)):
@@ -28,6 +28,7 @@ class RepositorioUsuario:
             "nome_usuario": nome_usuario,
             "email": email,
             "senha_hash": senha_hash,
+            "papel": papel,
             "criado_em": agora,
             "atualizado_em": agora,
         }
@@ -50,7 +51,7 @@ class RepositorioUsuario:
 
     def atualizar(self, usuario_id: int, **campos: Any) -> dict[str, Any]:
         atual = self.buscar_por_id(usuario_id)
-        permitidos = {"nome_usuario", "email", "senha_hash"}
+        permitidos = {"nome_usuario", "email", "senha_hash", "papel"}
         alteracoes = {chave: valor for chave, valor in campos.items() if chave in permitidos}
         if "email" in alteracoes:
             novo_email = str(alteracoes["email"]).strip().lower()
