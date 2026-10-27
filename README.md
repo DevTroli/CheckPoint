@@ -1,94 +1,165 @@
 # Checkpoint
 
-Backend do Checkpoint, um catálogo pessoal de jogos com registros de progresso e avaliação.
+O **Checkpoint** é um catálogo pessoal de jogos. Cada usuário pode registrar os jogos que jogou, acompanhar seu progresso, informar uma nota e escrever uma avaliação.
 
-O projeto usa **Django + Django REST Framework** para as rotas e serializers, mas mantém o **Redis como banco NoSQL principal**. O Django ORM não é usado para as entidades do domínio.
+O projeto foi desenvolvido como um backend acadêmico usando **Django**, **Django REST Framework** e **Redis como banco NoSQL principal**.
 
-## Stack atual
+## Stack e decisões
 
-- Django 5
-- Django REST Framework
-- Redis 7
-- `redis-py`
-- Argon2 para hash de senha
-- `fakeredis` nos testes
+- **Django + DRF:** rotas, views, serializers e sessões.
+- **Redis:** usuários, jogos, registros e gamificação.
+- **redis-py:** comunicação com o Redis.
+- **Argon2:** proteção das senhas.
+- **fakeredis:** testes automatizados sem depender de um servidor externo.
 
-O SQLite em memória aparece somente como configuração interna exigida por componentes do Django. Usuários, jogos, registros e gamificação ficam no Redis.
+O Django ORM não é usado para os dados do sistema. As entidades são armazenadas diretamente em Hashes, Sets, Strings e Sorted Sets do Redis.
 
-## Executar o Redis
+## Executando o projeto
+
+É necessário ter Python 3.11+ e Docker instalados.
+
+```bash
+git clone https://github.com/DevTroli/CheckPoint.git
+cd CheckPoint
+python -m venv .venv
+source .venv/bin/activate
+pip install -e '.[dev]'
+```
+
+Inicie o Redis:
 
 ```bash
 docker compose up -d redis
 ```
 
-O Redis ficará disponível em `localhost:6379`.
-
-## Instalar dependências e executar a API
+Depois, execute o Django:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[dev]'
 python manage.py runserver
 ```
 
-A API ficará disponível em `http://127.0.0.1:8000`.
+A API ficará disponível em:
 
-Variáveis de ambiente disponíveis:
-
-```bash
-export REDIS_HOST=localhost
-export REDIS_PORT=6379
-export REDIS_DB=0
-export REDIS_PASSWORD=
-export DJANGO_SECRET_KEY=uma-chave-local
+```text
+http://127.0.0.1:8000
 ```
 
-## Testar o projeto
+As principais variáveis de ambiente são:
 
 ```bash
-pytest -q
-python manage.py check
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
+REDIS_PASSWORD=
+DJANGO_SECRET_KEY=uma-chave-local
 ```
 
-Os testes usam `fakeredis`, uma implementação compatível com o cliente Redis. Isso permite testar os repositórios e a API sem depender de um Redis externo. Para validar a integração com um Redis real, execute o Docker Compose antes de iniciar a API.
+## Fluxo principal da API
 
-## Testar diretamente no Redis
+O primeiro usuário cadastrado recebe o papel `admin`. Isso permite criar o catálogo inicial de jogos.
 
-Com o container em execução, abra o terminal do Redis:
+### Cadastro e login
+
+```http
+POST /api/usuarios/
+POST /api/auth/login/
+POST /api/auth/logout/
+GET  /api/usuarios/me/
+PATCH /api/usuarios/me/
+```
+
+Exemplo de cadastro:
+
+```bash
+curl -c cookies.txt -X POST http://127.0.0.1:8000/api/usuarios/ \
+  -H 'Content-Type: application/json' \
+  -d '{"nome_usuario":"admin","email":"admin@example.com","senha":"senha123"}'
+```
+
+Exemplo de login:
+
+```bash
+curl -b cookies.txt -c cookies.txt -X POST \
+  http://127.0.0.1:8000/api/auth/login/ \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"admin@example.com","senha":"senha123"}'
+```
+
+### Catálogo de jogos
+
+```http
+GET    /api/jogos/
+POST   /api/jogos/
+GET    /api/jogos/{id}/
+PUT    /api/jogos/{id}/
+DELETE /api/jogos/{id}/
+```
+
+As operações de escrita exigem um usuário administrador. A listagem aceita filtros simples:
+
+```text
+/api/jogos/?busca=zelda
+/api/jogos/?categoria=RPG
+/api/jogos/?ordenar=nome
+```
+
+### Registros pessoais
+
+```http
+GET    /api/registros/
+POST   /api/registros/
+GET    /api/registros/{id}/
+PATCH  /api/registros/{id}/
+DELETE /api/registros/{id}/
+```
+
+Cada registro guarda o progresso, o tempo jogado, a nota, o status e a avaliação do usuário. Um usuário não pode registrar o mesmo jogo duas vezes e só pode alterar os próprios registros.
+
+### Gamificação
+
+```http
+GET /api/gamificacao/me/
+GET /api/gamificacao/ranking/?limite=10
+```
+
+A gamificação foi mantida intencionalmente simples:
+
+- criar um registro concede `25 XP`;
+- atualizar um registro concede `5 XP`;
+- a primeira atividade do dia concede `5 XP`;
+- dias consecutivos aumentam o streak;
+- a mesma atividade não concede XP duas vezes no mesmo dia.
+
+O XP é acumulado com `ZINCRBY` e o ranking é consultado com `ZRANGE` em ordem decrescente.
+
+## Conferindo os dados no Redis
+
+Com o Redis em execução, abra o cliente:
 
 ```bash
 docker exec -it checkpoint-redis redis-cli
 ```
 
-Verifique se o servidor está respondendo:
+Verifique a conexão:
 
 ```redis
 PING
 ```
 
-A resposta esperada é:
-
-```text
-PONG
-```
-
-Depois de cadastrar dados pela API, consulte os Hashes e índices:
+Consulte usuários, jogos e registros:
 
 ```redis
 SCAN 0 MATCH usuario:* COUNT 100
 HGETALL usuario:1
-GET indice:usuario:email:admin@example.com
 
 SCAN 0 MATCH jogo:* COUNT 100
 HGETALL jogo:1
 
-SMEMBERS usuario:1:registros
 HGETALL registro:1
-GET indice:registro:1:1
+SMEMBERS usuario:1:registros
 ```
 
-Para verificar a gamificação:
+Consulte a gamificação:
 
 ```redis
 ZSCORE ranking:xp usuario:1
@@ -97,151 +168,80 @@ HGETALL gamificacao:1
 SCAN 0 MATCH atividade:1:* COUNT 100
 ```
 
-O `ZRANGE ... REV WITHSCORES` mostra o ranking do maior XP para o menor. O backend usa `ZINCRBY` para somar XP e `ZRANGE` para consultar o ranking.
-
-Para limpar somente o banco local de desenvolvimento, use com cuidado:
+Para limpar o banco local de desenvolvimento, use com cuidado:
 
 ```redis
 FLUSHDB
 ```
 
-## Como testar a API com curl
+## Modelagem Redis
 
-Cadastre o primeiro usuário. Nesta versão, o primeiro usuário recebe o papel `admin` para permitir o cadastro inicial do catálogo:
+As entidades principais usam Hashes:
+
+```text
+usuario:{id}
+jogo:{id}
+registro:{id}
+```
+
+Os Sets mantêm os índices de relacionamento:
+
+```text
+usuario:{id}:registros
+jogo:{id}:registros
+```
+
+Strings são usadas para buscas rápidas e unicidade:
+
+```text
+indice:usuario:email:{email}
+indice:usuario:nome:{nome}
+indice:jogo:nome:{nome}
+indice:registro:{usuario_id}:{jogo_id}
+```
+
+A gamificação usa:
+
+```text
+ranking:xp                  Sorted Set
+gamificacao:{id}            Hash
+atividade:{id}:{data}       String com expiração
+```
+
+## Testes
+
+Execute a checagem do Django e os testes automatizados com:
 
 ```bash
-curl -i -c cookies.txt -X POST http://127.0.0.1:8000/api/usuarios/ \
-  -H 'Content-Type: application/json' \
-  -d '{"nome_usuario":"admin","email":"admin@example.com","senha":"senha123"}'
+python manage.py check
+pytest -q
 ```
 
-Faça login e guarde o cookie de sessão:
+A suíte cobre persistência, CRUD, validações, autenticação, permissões, XP, ranking e streak.
 
-```bash
-curl -i -b cookies.txt -c cookies.txt -X POST http://127.0.0.1:8000/api/auth/login/ \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"admin@example.com","senha":"senha123"}'
-```
-
-Cadastre um jogo:
-
-```bash
-curl -i -b cookies.txt -X POST http://127.0.0.1:8000/api/jogos/ \
-  -H 'Content-Type: application/json' \
-  -d '{"nome":"Celeste","categoria":"Plataforma","data_lancamento":"2018-01-25"}'
-```
-
-Consulte o catálogo:
-
-```bash
-curl 'http://127.0.0.1:8000/api/jogos/?busca=celeste'
-```
-
-## Endpoints implementados
-
-### Autenticação e usuário
+## Estrutura do projeto
 
 ```text
-POST  /api/usuarios/
-POST  /api/auth/login/
-POST  /api/auth/logout/
-GET   /api/usuarios/me/
-PATCH /api/usuarios/me/
-```
-
-### Jogos
-
-```text
-GET    /api/jogos/
-POST   /api/jogos/                 # admin
-GET    /api/jogos/{id}/
-PUT    /api/jogos/{id}/             # admin
-DELETE /api/jogos/{id}/             # admin
-```
-
-A listagem aceita `busca`, `categoria` e `ordenar`.
-
-### Registros pessoais
-
-```text
-GET    /api/registros/
-POST   /api/registros/
-GET    /api/registros/{id}/
-PATCH  /api/registros/{id}/
-DELETE /api/registros/{id}/
-```
-
-Cada usuário acessa somente seus próprios registros.
-
-### Gamificação
-
-```text
-GET /api/gamificacao/me/
-GET /api/gamificacao/ranking/?limite=10
-```
-
-Regras mínimas:
-
-- criar um registro: `+25 XP`;
-- atualizar um registro: `+5 XP`;
-- primeira atividade do dia: `+5 XP`;
-- a atividade diária repetida não gera XP novamente;
-- dias consecutivos aumentam o streak;
-- uma quebra de sequência reinicia o streak em `1`.
-
-## Modelagem NoSQL
-
-| Entidade | Chave principal | Tipo | Uso |
-| --- | --- | --- | --- |
-| Usuário | `usuario:{id}` | Hash | Dados da conta |
-| Jogo | `jogo:{id}` | Hash | Dados do catálogo |
-| Registro | `registro:{id}` | Hash | Relação entre usuário e jogo |
-| Registros do usuário | `usuario:{id}:registros` | Set | Lista de registros do usuário |
-| Registros do jogo | `jogo:{id}:registros` | Set | Registros associados ao jogo |
-| Índice de e-mail | `indice:usuario:email:{email}` | String | Busca rápida por e-mail |
-| Índice de nome de usuário | `indice:usuario:nome:{nome}` | String | Busca rápida por nome |
-| Índice de nome de jogo | `indice:jogo:nome:{nome}` | String | Evita jogos repetidos |
-| Índice usuário-jogo | `indice:registro:{usuario_id}:{jogo_id}` | String | Garante um registro único |
-| Ranking de XP | `ranking:xp` | Sorted Set | Ordena usuários por XP |
-| Perfil de gamificação | `gamificacao:{id}` | Hash | Streak e última atividade |
-| Atividade do dia | `atividade:{id}:{data}` | String com expiração | Evita recompensa duplicada |
-
-## Regras de consistência
-
-1. E-mail e nome de usuário são únicos.
-2. O nome do jogo é único nesta primeira versão.
-3. Um usuário não pode registrar o mesmo jogo duas vezes.
-4. Um registro só aponta para usuário e jogo existentes.
-5. Exclusões removem registros relacionados e índices conhecidos.
-6. Senhas nunca são armazenadas em texto puro.
-7. O primeiro usuário cadastrado recebe `admin` para inicializar o catálogo.
-8. As alterações de jogos exigem papel `admin`.
-
-## Estrutura atual
-
-```text
-checkpoint/
-├── app/
-│   ├── api/
-│   │   ├── dependencias.py
-│   │   ├── gamificacao.py
-│   │   ├── serializers.py
-│   │   ├── urls.py
-│   │   └── views.py
-│   └── persistencia/
-│       ├── conexao_redis.py
-│       ├── excecoes.py
-│       ├── chaves.py
-│       └── repositorios/
-├── config/
-│   ├── settings.py
+app/
+├── api/
+│   ├── gamificacao.py
+│   ├── serializers.py
 │   ├── urls.py
-│   └── wsgi.py
-├── tests/
-│   ├── test_api.py
-│   └── test_repositorios.py
-├── manage.py
-├── docker-compose.yml
-├── pyproject.toml
-└── README.md
+│   └── views.py
+└── persistencia/
+    ├── conexao_redis.py
+    ├── chaves.py
+    └── repositorios/
+
+config/
+├── settings.py
+└── urls.py
+
+tests/
+├── test_api.py
+└── test_repositorios.py
 ```
+
+## Status
+
+As milestones **Banco** e **BackEnd** estão concluídas. A próxima etapa é implementar o **FrontEnd**, consumindo os endpoints já definidos.
