@@ -43,13 +43,20 @@ def test_paginas_do_catalogo_respondem(caminho, marcador):
 @pytest.mark.parametrize(
     "caminho, marcador",
     [
-        ("/jogos/", 'id="visao"'),
         ("/jogos/7/", 'id="minha-avaliacao"'),
         ("/jogos/7/", 'id="form-avaliacao"'),
     ],
 )
 def test_paginas_trazem_a_avaliacao_pessoal(caminho, marcador):
     assert marcador in Client().get(caminho).content.decode()
+
+
+def test_catalogo_nao_tem_filtro_exibir():
+    # Todo jogo visível já é do usuário, então não há o que alternar.
+    html = Client().get("/jogos/").content.decode()
+
+    assert 'id="visao"' not in html
+    assert 'id="busca"' in html
 
 
 def test_novo_jogo_tem_duas_etapas():

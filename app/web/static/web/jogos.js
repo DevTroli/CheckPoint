@@ -5,7 +5,6 @@
   const busca = document.getElementById("busca");
   const categoria = document.getElementById("categoria");
   const ordenar = document.getElementById("ordenar");
-  const visao = document.getElementById("visao");
 
   let usuario = null;
   let registros = new Map(); // jogo_id -> registro do usuário logado
@@ -71,10 +70,10 @@
       return resposta;
     }
     dialogo.hidden = true;
-    const somenteMeus = usuario && visao.value === "meus";
-    const jogos = somenteMeus ? resposta.dados.filter((jogo) => registros.has(jogo.id)) : resposta.dados;
+    const jogos = resposta.dados;
+    const semFiltros = !params.has("busca") && !params.has("categoria");
     lista.replaceChildren(...jogos.map(cartao));
-    vazio.textContent = somenteMeus && !registros.size ? "VOCÊ AINDA NÃO AVALIOU NENHUM JOGO" : "NENHUM JOGO ENCONTRADO";
+    vazio.textContent = semFiltros ? "VOCÊ AINDA NÃO ADICIONOU NENHUM JOGO" : "NENHUM JOGO ENCONTRADO";
     vazio.hidden = jogos.length > 0;
     return resposta;
   }
@@ -91,7 +90,6 @@
   });
   categoria.addEventListener("change", carregar);
   ordenar.addEventListener("change", carregar);
-  visao.addEventListener("change", carregar);
 
   (async function iniciar() {
     try {
@@ -104,8 +102,6 @@
       }
       const meus = await Checkpoint.api("GET", "/api/registros/");
       if (meus.ok) registros = new Map(meus.dados.map((registro) => [registro.jogo_id, registro]));
-      visao.value = registros.size ? "meus" : "todos";
-      document.getElementById("campo-visao").hidden = false;
       document.getElementById("novo-jogo").hidden = false;
       const inicial = await carregar();
       if (inicial.ok) preencherCategorias(inicial.dados);
