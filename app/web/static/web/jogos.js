@@ -96,13 +96,17 @@
   (async function iniciar() {
     try {
       usuario = await Checkpoint.usuario();
-      if (usuario) {
-        const meus = await Checkpoint.api("GET", "/api/registros/");
-        if (meus.ok) registros = new Map(meus.dados.map((registro) => [registro.jogo_id, registro]));
-        visao.value = registros.size ? "meus" : "todos";
-        document.getElementById("campo-visao").hidden = false;
-        if (usuario.papel === "admin") document.getElementById("novo-jogo").hidden = false;
+      if (!usuario) {
+        // Os jogos são privados: sem login não há o que listar.
+        document.getElementById("filtros").hidden = true;
+        document.getElementById("pedido-login").hidden = false;
+        return;
       }
+      const meus = await Checkpoint.api("GET", "/api/registros/");
+      if (meus.ok) registros = new Map(meus.dados.map((registro) => [registro.jogo_id, registro]));
+      visao.value = registros.size ? "meus" : "todos";
+      document.getElementById("campo-visao").hidden = false;
+      document.getElementById("novo-jogo").hidden = false;
       const inicial = await carregar();
       if (inicial.ok) preencherCategorias(inicial.dados);
     } catch (e) {

@@ -45,6 +45,16 @@
     document.dispatchEvent(new CustomEvent("gamificacao-atualizada", { detail: dados }));
   };
 
+  /* "+25 XP | STREAK 3" com o que mudou entre antes e depois; vazio se nada mudou. */
+  Checkpoint.textoGanho = function (antes, depois) {
+    if (!depois) return "";
+    const partes = [];
+    const xp = depois.xp - (antes ? antes.xp : 0);
+    if (xp > 0) partes.push("+" + xp + " XP");
+    if (antes && depois.streak > antes.streak) partes.push("STREAK " + depois.streak);
+    return partes.join(" | ");
+  };
+
   Checkpoint.el = function (tag, atributos, ...filhos) {
     const no = document.createElement(tag);
     Object.entries(atributos || {}).forEach(([nome, valor]) => no.setAttribute(nome, valor));

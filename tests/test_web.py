@@ -52,6 +52,20 @@ def test_paginas_trazem_a_avaliacao_pessoal(caminho, marcador):
     assert marcador in Client().get(caminho).content.decode()
 
 
+def test_novo_jogo_tem_duas_etapas():
+    html = Client().get("/jogos/novo/").content.decode()
+
+    assert 'id="etapa-jogo"' in html
+    assert 'id="etapa-avaliacao"' in html
+
+
+def test_editar_jogo_tem_so_a_etapa_do_jogo():
+    html = Client().get("/jogos/7/editar/").content.decode()
+
+    assert 'id="etapa-jogo"' in html
+    assert 'id="etapa-avaliacao"' not in html
+
+
 def test_pagina_do_ranking_responde():
     resposta = Client().get("/ranking/")
 

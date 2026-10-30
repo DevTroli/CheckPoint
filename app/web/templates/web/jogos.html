@@ -10,7 +10,11 @@
     <a id="novo-jogo" class="botao botao-link" href="{% url 'jogo_novo' %}" hidden>+ NOVO JOGO</a>
   </div>
 
-  <div class="filtros">
+  <p id="pedido-login" class="vazio" hidden>
+    <a href="{% url 'entrar' %}">ENTRE</a> PARA VER E ADICIONAR SEUS JOGOS
+  </p>
+
+  <div class="filtros" id="filtros">
     <div class="campo" id="campo-visao" hidden>
       <label for="visao">EXIBIR</label>
       <select id="visao">

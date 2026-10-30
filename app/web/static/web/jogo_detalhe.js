@@ -12,7 +12,8 @@
     try {
       const resposta = await Checkpoint.api("GET", "/api/jogos/" + jogoId + "/");
       if (!resposta.ok) {
-        Checkpoint.mostrarDialogo(dialogo, resposta.dados.mensagem || "Jogo não encontrado.");
+        const padrao = resposta.status === 401 ? "Entre para ver este jogo." : "Jogo não encontrado.";
+        Checkpoint.mostrarDialogo(dialogo, resposta.dados.mensagem || padrao);
         return;
       }
       const jogo = resposta.dados;
@@ -26,11 +27,9 @@
       artigo.hidden = false;
       document.dispatchEvent(new Event("jogo-carregado"));
 
-      const usuario = await Checkpoint.usuario();
-      if (usuario && usuario.papel === "admin") {
-        document.getElementById("editar").href = "/jogos/" + jogoId + "/editar/";
-        document.getElementById("acoes-admin").hidden = false;
-      }
+      // A API só entrega jogos que o usuário pode gerenciar (os dele; todos, no caso do admin).
+      document.getElementById("editar").href = "/jogos/" + jogoId + "/editar/";
+      document.getElementById("acoes-jogo").hidden = false;
     } catch (e) {
       Checkpoint.mostrarDialogo(dialogo, "Sem conexão com o servidor.");
     }

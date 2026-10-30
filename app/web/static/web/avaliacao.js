@@ -26,11 +26,8 @@
   /* Confirma o salvamento e informa o XP (e o streak) conquistados. */
   function mostrarSalvo(antes, depois) {
     const partes = ["AVALIAÇÃO SALVA!"];
-    if (depois) {
-      const xp = depois.xp - (antes ? antes.xp : 0);
-      if (xp > 0) partes.push("+" + xp + " XP");
-      if (antes && depois.streak > antes.streak) partes.push("STREAK " + depois.streak);
-    }
+    const ganho = Checkpoint.textoGanho(antes, depois);
+    if (ganho) partes.push(ganho);
     mostrarAviso(partes.join(" | "));
   }
 
