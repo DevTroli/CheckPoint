@@ -1,0 +1,26 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Checkpoint{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'web/estilo.css' %}">
+</head>
+<body>
+  <header class="topo">
+    <a class="marca" href="{% url 'inicio' %}">CHECKPOINT</a>
+    <nav class="menu">
+      <a href="{% url 'entrar' %}">Entrar</a>
+      <a href="{% url 'cadastrar' %}">Cadastrar</a>
+    </nav>
+  </header>
+  <main class="conteudo">
+    {% block conteudo %}{% endblock %}
+  </main>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block titulo %}Cadastrar | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="painel">
+  <h1 class="painel-titulo">NOVO JOGADOR</h1>
+  <form id="form-auth" class="form" data-acao="cadastro" novalidate>
+    <div class="campo">
+      <label for="nome_usuario">JOGADOR</label>
+      <input id="nome_usuario" name="nome_usuario" type="text" minlength="3" maxlength="50" autocomplete="username" required>
+      <p class="erro-campo" data-erro-para="nome_usuario"></p>
+    </div>
+    <div class="campo">
+      <label for="email">E-MAIL</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <p class="erro-campo" data-erro-para="email"></p>
+    </div>
+    <div class="campo">
+      <label for="senha">SENHA</label>
+      <input id="senha" name="senha" type="password" minlength="6" maxlength="128" autocomplete="new-password" required>
+      <p class="erro-campo" data-erro-para="senha"></p>
+    </div>
+    <div class="dialogo" id="dialogo" role="alert" hidden></div>
+    <button class="botao" type="submit">CRIAR PERSONAGEM</button>
+  </form>
+  <p class="troca">Já tem conta? <a href="{% url 'entrar' %}">Continuar jogo</a></p>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'web/auth.js' %}"></script>{% endblock %}
