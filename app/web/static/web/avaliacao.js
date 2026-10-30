@@ -12,7 +12,24 @@
   const botaoCancelar = document.getElementById("av-cancelar");
   const textoSalvar = botaoSalvar.textContent;
 
+  const ganho = document.getElementById("ganho");
+
   let registro = null;
+
+  /* Mostra o XP (e o streak) conquistados pela ação que acabou de ser salva. */
+  function mostrarGanho(antes, depois) {
+    const xp = depois.xp - (antes ? antes.xp : 0);
+    const streakSubiu = antes && depois.streak > antes.streak;
+    if (xp <= 0 && !streakSubiu) {
+      ganho.hidden = true;
+      return;
+    }
+    const partes = [];
+    if (xp > 0) partes.push("+" + xp + " XP");
+    if (streakSubiu) partes.push("STREAK " + depois.streak);
+    ganho.textContent = partes.join(" | ");
+    ganho.hidden = false;
+  }
 
   function renderizar() {
     confirmar.hidden = true;
@@ -82,13 +99,20 @@
 
     botaoSalvar.disabled = true;
     botaoSalvar.textContent = "SALVANDO...";
+    ganho.hidden = true;
     try {
+      const antes = await Checkpoint.gamificacao();
       const resposta = registro
         ? await Checkpoint.api("PATCH", "/api/registros/" + registro.id + "/", corpo)
         : await Checkpoint.api("POST", "/api/registros/", Object.assign({ jogo_id: jogoId }, corpo));
       if (!resposta.ok) return Checkpoint.mostrarErro(form, dialogo, resposta);
       registro = resposta.dados.registro;
       renderizar();
+      const depois = resposta.dados.gamificacao;
+      if (depois) {
+        Checkpoint.atualizarGamificacao(depois);
+        mostrarGanho(antes, depois);
+      }
     } catch (e) {
       Checkpoint.mostrarDialogo(dialogo, "Sem conexão com o servidor.");
     } finally {

@@ -29,6 +29,22 @@
     return usuarioPromessa;
   };
 
+  /* XP, streak e posição do usuário logado; compartilhado entre cabeçalho e páginas. */
+  let gamificacaoPromessa = null;
+  Checkpoint.gamificacao = function () {
+    if (!gamificacaoPromessa) {
+      gamificacaoPromessa = Checkpoint.api("GET", "/api/gamificacao/me/")
+        .then((r) => (r.ok ? r.dados : null))
+        .catch(() => null);
+    }
+    return gamificacaoPromessa;
+  };
+
+  Checkpoint.atualizarGamificacao = function (dados) {
+    gamificacaoPromessa = Promise.resolve(dados);
+    document.dispatchEvent(new CustomEvent("gamificacao-atualizada", { detail: dados }));
+  };
+
   Checkpoint.el = function (tag, atributos, ...filhos) {
     const no = document.createElement(tag);
     Object.entries(atributos || {}).forEach(([nome, valor]) => no.setAttribute(nome, valor));

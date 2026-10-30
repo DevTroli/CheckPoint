@@ -52,5 +52,16 @@ def test_paginas_trazem_a_avaliacao_pessoal(caminho, marcador):
     assert marcador in Client().get(caminho).content.decode()
 
 
+def test_pagina_do_ranking_responde():
+    resposta = Client().get("/ranking/")
+
+    assert resposta.status_code == 200
+    assert 'id="tabela-ranking"' in resposta.content.decode()
+
+
+def test_menu_tem_link_para_o_ranking():
+    assert 'href="/ranking/"' in Client().get("/").content.decode()
+
+
 def test_detalhe_com_id_invalido_nao_existe():
     assert Client().get("/jogos/abc/").status_code == 404
