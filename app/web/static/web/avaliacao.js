@@ -16,19 +16,22 @@
 
   let registro = null;
 
-  /* Mostra o XP (e o streak) conquistados pela ação que acabou de ser salva. */
-  function mostrarGanho(antes, depois) {
-    const xp = depois.xp - (antes ? antes.xp : 0);
-    const streakSubiu = antes && depois.streak > antes.streak;
-    if (xp <= 0 && !streakSubiu) {
-      ganho.hidden = true;
-      return;
-    }
-    const partes = [];
-    if (xp > 0) partes.push("+" + xp + " XP");
-    if (streakSubiu) partes.push("STREAK " + depois.streak);
-    ganho.textContent = partes.join(" | ");
+  /* Aviso no topo do painel; rola até ele porque o botão Salvar fica lá embaixo. */
+  function mostrarAviso(texto) {
+    ganho.textContent = texto;
     ganho.hidden = false;
+    secao.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  /* Confirma o salvamento e informa o XP (e o streak) conquistados. */
+  function mostrarSalvo(antes, depois) {
+    const partes = ["AVALIAÇÃO SALVA!"];
+    if (depois) {
+      const xp = depois.xp - (antes ? antes.xp : 0);
+      if (xp > 0) partes.push("+" + xp + " XP");
+      if (antes && depois.streak > antes.streak) partes.push("STREAK " + depois.streak);
+    }
+    mostrarAviso(partes.join(" | "));
   }
 
   function renderizar() {
@@ -109,10 +112,8 @@
       registro = resposta.dados.registro;
       renderizar();
       const depois = resposta.dados.gamificacao;
-      if (depois) {
-        Checkpoint.atualizarGamificacao(depois);
-        mostrarGanho(antes, depois);
-      }
+      if (depois) Checkpoint.atualizarGamificacao(depois);
+      mostrarSalvo(antes, depois);
     } catch (e) {
       Checkpoint.mostrarDialogo(dialogo, "Sem conexão com o servidor.");
     } finally {
@@ -143,6 +144,7 @@
       }
       registro = null;
       renderizar();
+      mostrarAviso("AVALIAÇÃO EXCLUÍDA.");
     } catch (e) {
       Checkpoint.mostrarDialogo(aviso, "Sem conexão com o servidor.");
     }

@@ -63,5 +63,14 @@ def test_menu_tem_link_para_o_ranking():
     assert 'href="/ranking/"' in Client().get("/").content.decode()
 
 
+def test_css_respeita_o_atributo_hidden():
+    # Regressão: .form/.acoes (display próprio) deixavam elementos hidden visíveis.
+    from pathlib import Path
+
+    css = Path("app/web/static/web/estilo.css").read_text(encoding="utf-8")
+
+    assert "[hidden]" in css and "display: none !important" in css
+
+
 def test_detalhe_com_id_invalido_nao_existe():
     assert Client().get("/jogos/abc/").status_code == 404
