@@ -1,0 +1,38 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block titulo %}Catálogo | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="pagina">
+  <div class="pagina-topo">
+    <h1 class="pagina-titulo">CATÁLOGO</h1>
+    <a id="novo-jogo" class="botao botao-link" href="{% url 'jogo_novo' %}" hidden>+ NOVO JOGO</a>
+  </div>
+
+  <div class="filtros">
+    <div class="campo">
+      <label for="busca">BUSCAR</label>
+      <input id="busca" type="search" placeholder="nome do jogo">
+    </div>
+    <div class="campo">
+      <label for="categoria">CATEGORIA</label>
+      <select id="categoria"><option value="">Todas</option></select>
+    </div>
+    <div class="campo">
+      <label for="ordenar">ORDENAR</label>
+      <select id="ordenar">
+        <option value="nome">Nome</option>
+        <option value="categoria">Categoria</option>
+        <option value="data_lancamento">Lançamento</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="dialogo" id="dialogo" role="alert" hidden></div>
+  <p id="vazio" class="vazio" hidden>NENHUM JOGO ENCONTRADO</p>
+  <ul id="lista-jogos" class="grade"></ul>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'web/jogos.js' %}"></script>{% endblock %}

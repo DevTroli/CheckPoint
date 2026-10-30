@@ -1,0 +1,72 @@
+/* Utilitários compartilhados pelas páginas. Todo texto vindo da API entra na
+   página via textContent (nunca innerHTML), para que dados não virem HTML. */
+(function () {
+  const Checkpoint = (window.Checkpoint = window.Checkpoint || {});
+
+  Checkpoint.api = async function (metodo, url, corpo) {
+    const opcoes = { method: metodo, credentials: "same-origin", headers: {} };
+    if (corpo !== undefined) {
+      opcoes.headers["Content-Type"] = "application/json";
+      opcoes.body = JSON.stringify(corpo);
+    }
+    const resposta = await fetch(url, opcoes);
+    let dados = null;
+    try {
+      dados = await resposta.json();
+    } catch (e) {
+      /* resposta sem corpo JSON (ex.: 204) */
+    }
+    return { ok: resposta.ok, status: resposta.status, dados: dados || {} };
+  };
+
+  let usuarioPromessa = null;
+  Checkpoint.usuario = function () {
+    if (!usuarioPromessa) {
+      usuarioPromessa = Checkpoint.api("GET", "/api/usuarios/me/")
+        .then((r) => (r.ok ? r.dados : null))
+        .catch(() => null);
+    }
+    return usuarioPromessa;
+  };
+
+  Checkpoint.el = function (tag, atributos, ...filhos) {
+    const no = document.createElement(tag);
+    Object.entries(atributos || {}).forEach(([nome, valor]) => no.setAttribute(nome, valor));
+    filhos.forEach((filho) => no.append(filho));
+    return no;
+  };
+
+  Checkpoint.limparErros = function (form, dialogo) {
+    dialogo.hidden = true;
+    dialogo.textContent = "";
+    form.querySelectorAll("[data-erro-para]").forEach((el) => (el.textContent = ""));
+    form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
+  };
+
+  Checkpoint.mostrarDialogo = function (dialogo, mensagem) {
+    dialogo.textContent = mensagem;
+    dialogo.hidden = false;
+  };
+
+  /* 400 -> mensagens sob cada campo; demais -> caixa de diálogo. */
+  Checkpoint.mostrarErro = function (form, dialogo, resposta) {
+    const { status, dados } = resposta;
+    if (status === 400) {
+      let algumCampo = false;
+      Object.entries(dados).forEach(([campo, mensagens]) => {
+        const alvo = form.querySelector('[data-erro-para="' + campo + '"]');
+        if (!alvo) return;
+        algumCampo = true;
+        alvo.textContent = [].concat(mensagens).join(" ");
+        form.elements[campo].setAttribute("aria-invalid", "true");
+      });
+      if (!algumCampo) Checkpoint.mostrarDialogo(dialogo, "Confira os dados informados.");
+      return;
+    }
+    Checkpoint.mostrarDialogo(dialogo, dados.mensagem || "Algo deu errado. Tente de novo.");
+  };
+
+  Checkpoint.ano = function (dataIso) {
+    return String(dataIso || "").slice(0, 4);
+  };
+})();

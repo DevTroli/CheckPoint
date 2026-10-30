@@ -1,0 +1,37 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block titulo %}Jogo | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="pagina" id="detalhe" data-jogo-id="{{ jogo_id }}">
+  <p><a href="{% url 'jogos' %}">&lt; Voltar ao catálogo</a></p>
+  <div class="dialogo" id="dialogo" role="alert" hidden></div>
+
+  <article id="jogo" class="painel painel-largo" hidden>
+    <h1 class="painel-titulo" id="jogo-nome"></h1>
+    <p class="tag" id="jogo-categoria"></p>
+    <dl class="ficha">
+      <dt>LANÇAMENTO</dt><dd id="jogo-ano"></dd>
+      <dt>DESENVOLVEDORA</dt><dd id="jogo-desenvolvedora"></dd>
+      <dt>PUBLICADORA</dt><dd id="jogo-publicadora"></dd>
+    </dl>
+    <p id="jogo-descricao" class="descricao"></p>
+
+    <div id="acoes-admin" class="acoes" hidden>
+      <a class="botao botao-link" id="editar" href="#">EDITAR</a>
+      <button class="botao botao-perigo" id="excluir" type="button">EXCLUIR</button>
+    </div>
+
+    <div id="confirmar" class="dialogo" hidden>
+      <p>EXCLUIR ESTE JOGO PARA SEMPRE?</p>
+      <div class="acoes">
+        <button class="botao botao-perigo" id="confirmar-sim" type="button">SIM</button>
+        <button class="botao" id="confirmar-nao" type="button">NÃO</button>
+      </div>
+    </div>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'web/jogo_detalhe.js' %}"></script>{% endblock %}

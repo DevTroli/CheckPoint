@@ -1,0 +1,47 @@
+{% extends "web/base.html" %}
+{% load static %}
+
+{% block titulo %}Jogo | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="painel painel-largo">
+  <h1 class="painel-titulo" id="form-titulo">{% if jogo_id %}EDITAR JOGO{% else %}NOVO JOGO{% endif %}</h1>
+  <form id="form-jogo" class="form" data-acao="jogo" data-jogo-id="{{ jogo_id }}" novalidate>
+    <div class="campo">
+      <label for="nome">NOME</label>
+      <input id="nome" name="nome" type="text" maxlength="150" required>
+      <p class="erro-campo" data-erro-para="nome"></p>
+    </div>
+    <div class="campo">
+      <label for="categoria">CATEGORIA</label>
+      <input id="categoria" name="categoria" type="text" maxlength="80" required>
+      <p class="erro-campo" data-erro-para="categoria"></p>
+    </div>
+    <div class="campo">
+      <label for="data_lancamento">LANÇAMENTO</label>
+      <input id="data_lancamento" name="data_lancamento" type="date" required>
+      <p class="erro-campo" data-erro-para="data_lancamento"></p>
+    </div>
+    <div class="campo">
+      <label for="desenvolvedora">DESENVOLVEDORA</label>
+      <input id="desenvolvedora" name="desenvolvedora" type="text" maxlength="120">
+      <p class="erro-campo" data-erro-para="desenvolvedora"></p>
+    </div>
+    <div class="campo">
+      <label for="publicadora">PUBLICADORA</label>
+      <input id="publicadora" name="publicadora" type="text" maxlength="120">
+      <p class="erro-campo" data-erro-para="publicadora"></p>
+    </div>
+    <div class="campo">
+      <label for="descricao">DESCRIÇÃO</label>
+      <textarea id="descricao" name="descricao" rows="4"></textarea>
+      <p class="erro-campo" data-erro-para="descricao"></p>
+    </div>
+    <div class="dialogo" id="dialogo" role="alert" hidden></div>
+    <button class="botao" type="submit">SALVAR</button>
+  </form>
+  <p class="troca"><a href="{% url 'jogos' %}">Cancelar</a></p>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'web/jogo_form.js' %}"></script>{% endblock %}

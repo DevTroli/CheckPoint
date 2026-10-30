@@ -22,3 +22,23 @@ def test_paginas_de_autenticacao_respondem(caminho, acao):
 
     assert resposta.status_code == 200
     assert acao in resposta.content.decode()
+
+
+@pytest.mark.parametrize(
+    "caminho, marcador",
+    [
+        ("/jogos/", 'id="lista-jogos"'),
+        ("/jogos/7/", 'data-jogo-id="7"'),
+        ("/jogos/novo/", 'data-acao="jogo"'),
+        ("/jogos/7/editar/", 'data-jogo-id="7"'),
+    ],
+)
+def test_paginas_do_catalogo_respondem(caminho, marcador):
+    resposta = Client().get(caminho)
+
+    assert resposta.status_code == 200
+    assert marcador in resposta.content.decode()
+
+
+def test_detalhe_com_id_invalido_nao_existe():
+    assert Client().get("/jogos/abc/").status_code == 404
