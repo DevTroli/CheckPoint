@@ -564,3 +564,76 @@ h1 {
 .placar {
   text-transform: uppercase;
 }
+
+/* ---- Página inicial: tela de abertura ---- */
+.abertura {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: calc(100vh - 9rem); /* descontando o cabeçalho (~4rem) e o padding de .conteudo (4rem) */
+}
+
+.abertura-textos {
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+}
+
+.abertura-textos h1 {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+  line-height: 1.4;
+  color: var(--ouro);
+  text-transform: uppercase;
+}
+
+.abertura-textos p {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.carregando {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+.carregando-texto {
+  margin: 0 0 1rem;
+  font-family: var(--fonte-titulo);
+  font-size: 0.8rem;
+  color: var(--texto);
+  animation: flutuar 1.4s ease-in-out infinite;
+}
+
+/* Sobe e desce só alguns pixels. */
+@keyframes flutuar {
+  0%,
+  100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* Barra travada em 75%: a largura é fixa, sem animação. */
+.barra {
+  height: 2rem;
+  padding: 4px;
+  background: #000;
+  border: 4px solid var(--borda);
+}
+
+.barra-preenchimento {
+  width: 75%;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--acento) 0 12px, transparent 12px 16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carregando-texto {
+    animation: none;
+  }
+}
