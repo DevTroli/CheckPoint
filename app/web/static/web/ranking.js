@@ -20,7 +20,8 @@
 
   function resumoDoUsuario(gamificacao) {
     if (!gamificacao.posicao) return "VOCÊ AINDA NÃO TEM XP";
-    return "VOCÊ: #" + gamificacao.posicao + " | " + gamificacao.xp + " XP | STREAK " + gamificacao.streak;
+    const sep = Checkpoint.separador;
+    return "VOCÊ: #" + gamificacao.posicao + sep + gamificacao.xp + " XP" + sep + "STREAK " + gamificacao.streak;
   }
 
   (async function iniciar() {

@@ -3,6 +3,9 @@
 (function () {
   const Checkpoint = (window.Checkpoint = window.Checkpoint || {});
 
+  /* Separador dos avisos em fonte pixel; o "|" dessa fonte parece um "I" colado no texto. */
+  Checkpoint.separador = " - ";
+
   Checkpoint.api = async function (metodo, url, corpo) {
     const opcoes = { method: metodo, credentials: "same-origin", headers: {} };
     if (corpo !== undefined) {
@@ -45,14 +48,14 @@
     document.dispatchEvent(new CustomEvent("gamificacao-atualizada", { detail: dados }));
   };
 
-  /* "+25 XP | STREAK 3" com o que mudou entre antes e depois; vazio se nada mudou. */
+  /* "+25 XP - STREAK 3" com o que mudou entre antes e depois; vazio se nada mudou. */
   Checkpoint.textoGanho = function (antes, depois) {
     if (!depois) return "";
     const partes = [];
     const xp = depois.xp - (antes ? antes.xp : 0);
     if (xp > 0) partes.push("+" + xp + " XP");
     if (antes && depois.streak > antes.streak) partes.push("STREAK " + depois.streak);
-    return partes.join(" | ");
+    return partes.join(Checkpoint.separador);
   };
 
   Checkpoint.el = function (tag, atributos, ...filhos) {

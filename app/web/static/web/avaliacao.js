@@ -28,7 +28,7 @@
     const partes = ["AVALIAÇÃO SALVA!"];
     const ganho = Checkpoint.textoGanho(antes, depois);
     if (ganho) partes.push(ganho);
-    mostrarAviso(partes.join(" | "));
+    mostrarAviso(partes.join(Checkpoint.separador));
   }
 
   function renderizar() {

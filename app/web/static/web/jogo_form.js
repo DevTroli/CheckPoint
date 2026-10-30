@@ -64,7 +64,7 @@
     const partes = ["JOGO ADICIONADO!"];
     const ganho = Checkpoint.textoGanho(antes, depois);
     if (ganho) partes.push(ganho);
-    document.getElementById("sucesso-texto").textContent = partes.join(" | ");
+    document.getElementById("sucesso-texto").textContent = partes.join(Checkpoint.separador);
     document.getElementById("ver-jogo").href = "/jogos/" + idDoJogo + "/";
     form.hidden = true;
     document.getElementById("etapas").hidden = true;
