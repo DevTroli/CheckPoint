@@ -5,6 +5,33 @@
   const busca = document.getElementById("busca");
   const categoria = document.getElementById("categoria");
   const ordenar = document.getElementById("ordenar");
+  const visao = document.getElementById("visao");
+
+  let usuario = null;
+  let registros = new Map(); // jogo_id -> registro do usuário logado
+
+  function trecho(texto) {
+    const limpo = String(texto || "").trim();
+    return limpo.length > 90 ? limpo.slice(0, 90).trimEnd() + "..." : limpo;
+  }
+
+  function blocoAvaliacao(jogo) {
+    const registro = registros.get(jogo.id);
+    if (registro) {
+      const filhos = [
+        Checkpoint.el(
+          "p",
+          { class: "cartao-nota" },
+          Checkpoint.formatarNota(registro.nota) + " | " + Checkpoint.formatarTempo(registro.tempo_jogado_minutos)
+        ),
+      ];
+      if (registro.avaliacao) {
+        filhos.push(Checkpoint.el("p", { class: "cartao-texto" }, trecho(registro.avaliacao)));
+      }
+      return filhos;
+    }
+    return usuario ? [Checkpoint.el("p", { class: "cartao-avaliar" }, "AVALIAR >")] : [];
+  }
 
   function cartao(jogo) {
     const meta = [Checkpoint.ano(jogo.data_lancamento), jogo.desenvolvedora]
@@ -18,7 +45,8 @@
         { class: "cartao-link", href: "/jogos/" + jogo.id + "/" },
         Checkpoint.el("span", { class: "tag" }, jogo.categoria),
         Checkpoint.el("h2", { class: "cartao-nome" }, jogo.nome),
-        Checkpoint.el("p", { class: "cartao-meta" }, meta)
+        Checkpoint.el("p", { class: "cartao-meta" }, meta),
+        ...blocoAvaliacao(jogo)
       )
     );
   }
@@ -35,8 +63,10 @@
       return resposta;
     }
     dialogo.hidden = true;
-    const jogos = resposta.dados;
+    const somenteMeus = usuario && visao.value === "meus";
+    const jogos = somenteMeus ? resposta.dados.filter((jogo) => registros.has(jogo.id)) : resposta.dados;
     lista.replaceChildren(...jogos.map(cartao));
+    vazio.textContent = somenteMeus && !registros.size ? "VOCÊ AINDA NÃO AVALIOU NENHUM JOGO" : "NENHUM JOGO ENCONTRADO";
     vazio.hidden = jogos.length > 0;
     return resposta;
   }
@@ -53,15 +83,20 @@
   });
   categoria.addEventListener("change", carregar);
   ordenar.addEventListener("change", carregar);
+  visao.addEventListener("change", carregar);
 
   (async function iniciar() {
     try {
+      usuario = await Checkpoint.usuario();
+      if (usuario) {
+        const meus = await Checkpoint.api("GET", "/api/registros/");
+        if (meus.ok) registros = new Map(meus.dados.map((registro) => [registro.jogo_id, registro]));
+        visao.value = registros.size ? "meus" : "todos";
+        document.getElementById("campo-visao").hidden = false;
+        if (usuario.papel === "admin") document.getElementById("novo-jogo").hidden = false;
+      }
       const inicial = await carregar();
       if (inicial.ok) preencherCategorias(inicial.dados);
-      const usuario = await Checkpoint.usuario();
-      if (usuario && usuario.papel === "admin") {
-        document.getElementById("novo-jogo").hidden = false;
-      }
     } catch (e) {
       Checkpoint.mostrarDialogo(dialogo, "Sem conexão com o servidor.");
     }

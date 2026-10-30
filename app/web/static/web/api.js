@@ -58,7 +58,8 @@
         if (!alvo) return;
         algumCampo = true;
         alvo.textContent = [].concat(mensagens).join(" ");
-        form.elements[campo].setAttribute("aria-invalid", "true");
+        const entrada = form.elements[campo];
+        if (entrada) entrada.setAttribute("aria-invalid", "true");
       });
       if (!algumCampo) Checkpoint.mostrarDialogo(dialogo, "Confira os dados informados.");
       return;
@@ -68,5 +69,29 @@
 
   Checkpoint.ano = function (dataIso) {
     return String(dataIso || "").slice(0, 4);
+  };
+
+  /* Nota 0 na API significa "sem nota". */
+  Checkpoint.formatarNota = function (nota) {
+    return Number(nota) > 0 ? Number(nota) + "/10" : "SEM NOTA";
+  };
+
+  Checkpoint.formatarTempo = function (minutos) {
+    const total = Number(minutos) || 0;
+    const horas = Math.floor(total / 60);
+    const resto = total % 60;
+    if (!horas) return resto + "min";
+    return resto ? horas + "h " + resto + "min" : horas + "h";
+  };
+
+  Checkpoint.rotuloStatus = function (status) {
+    const rotulos = {
+      planejado: "Planejado",
+      jogando: "Jogando",
+      pausado: "Pausado",
+      abandonado: "Abandonado",
+      concluido: "Concluído",
+    };
+    return rotulos[status] || status;
   };
 })();

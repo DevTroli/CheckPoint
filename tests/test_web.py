@@ -40,5 +40,17 @@ def test_paginas_do_catalogo_respondem(caminho, marcador):
     assert marcador in resposta.content.decode()
 
 
+@pytest.mark.parametrize(
+    "caminho, marcador",
+    [
+        ("/jogos/", 'id="visao"'),
+        ("/jogos/7/", 'id="minha-avaliacao"'),
+        ("/jogos/7/", 'id="form-avaliacao"'),
+    ],
+)
+def test_paginas_trazem_a_avaliacao_pessoal(caminho, marcador):
+    assert marcador in Client().get(caminho).content.decode()
+
+
 def test_detalhe_com_id_invalido_nao_existe():
     assert Client().get("/jogos/abc/").status_code == 404

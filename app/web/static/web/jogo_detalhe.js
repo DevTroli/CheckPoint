@@ -24,6 +24,7 @@
       texto("jogo-publicadora", jogo.publicadora, "-");
       texto("jogo-descricao", jogo.descricao, "Sem descrição.");
       artigo.hidden = false;
+      document.dispatchEvent(new Event("jogo-carregado"));
 
       const usuario = await Checkpoint.usuario();
       if (usuario && usuario.papel === "admin") {

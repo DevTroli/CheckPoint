@@ -364,3 +364,34 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Avaliação pessoal ---- */
+.cartao-nota {
+  margin: 0.75rem 0 0;
+  font-family: var(--fonte-titulo);
+  font-size: 0.65rem;
+  line-height: 1.6;
+  color: var(--ouro);
+}
+
+.cartao-texto {
+  margin: 0.5rem 0 0;
+  color: var(--texto);
+}
+
+.cartao-avaliar {
+  margin: 0.75rem 0 0;
+  font-family: var(--fonte-titulo);
+  font-size: 0.6rem;
+  color: var(--acento);
+}
+
+.campo-duplo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+#minha-avaliacao {
+  margin-top: 2rem;
+}
