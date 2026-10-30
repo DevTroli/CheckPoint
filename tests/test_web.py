@@ -6,6 +6,8 @@ import django
 
 django.setup()
 
+from pathlib import Path
+
 import pytest
 from django.test import Client
 
@@ -78,6 +80,14 @@ def test_pagina_do_ranking_responde():
 
     assert resposta.status_code == 200
     assert 'id="tabela-ranking"' in resposta.content.decode()
+
+
+def test_placar_usa_estilo_de_fliperama_em_caixa_alta():
+    html = Client().get("/ranking/").content.decode()
+    css = Path("app/web/static/web/estilo.css").read_text(encoding="utf-8")
+
+    assert 'class="pagina placar"' in html
+    assert ".placar" in css and "text-transform: uppercase" in css
 
 
 def test_menu_tem_link_para_o_ranking():

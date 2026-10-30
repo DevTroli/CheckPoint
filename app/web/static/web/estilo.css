@@ -559,3 +559,8 @@ h1 {
   padding: 0;
   border: 0;
 }
+
+/* Placar em caixa alta, como nos fliperamas antigos (só exibição; os dados não mudam). */
+.placar {
+  text-transform: uppercase;
+}
