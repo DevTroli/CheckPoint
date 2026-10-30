@@ -11,8 +11,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.auth",
+    "django.contrib.staticfiles",
     "rest_framework",
     "app.api",
+    "app.web",
 ]
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -20,6 +22,20 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
 ]
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+            ],
+        },
+    },
+]
+STATIC_URL = "static/"
 
 # O projeto não usa o ORM para guardar o domínio. O SQLite em memória existe
 # apenas para satisfazer componentes internos do Django que esperam DATABASES.

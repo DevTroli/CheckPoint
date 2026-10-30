@@ -1,0 +1,112 @@
+{% extends "web/base.html" %}
+{% load versao %}
+
+{% block titulo %}{% if jogo_id %}Editar jogo{% else %}Novo jogo{% endif %} | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="painel painel-largo" id="painel-form">
+  <h1 class="painel-titulo" id="form-titulo">{% if jogo_id %}EDITAR JOGO{% else %}NOVO JOGO{% endif %}</h1>
+
+  {% if not jogo_id %}
+  <ol class="etapas" id="etapas">
+    <li class="etapa-marca ativa" data-etapa="1">1. O JOGO</li>
+    <li class="etapa-marca" data-etapa="2">2. SUA AVALIAÇÃO</li>
+  </ol>
+  {% endif %}
+
+  <form id="form-jogo" class="form" data-acao="jogo" data-jogo-id="{{ jogo_id }}" novalidate>
+    <fieldset class="etapa" id="etapa-jogo">
+      <div class="campo">
+        <label for="nome">NOME</label>
+        <input id="nome" name="nome" type="text" maxlength="150" required>
+        <p class="erro-campo" data-erro-para="nome"></p>
+      </div>
+      <div class="campo">
+        <label for="categoria">CATEGORIA</label>
+        <input id="categoria" name="categoria" type="text" maxlength="80" required>
+        <p class="erro-campo" data-erro-para="categoria"></p>
+      </div>
+      <div class="campo">
+        <label for="data_lancamento">LANÇAMENTO</label>
+        <input id="data_lancamento" name="data_lancamento" type="date" required>
+        <p class="erro-campo" data-erro-para="data_lancamento"></p>
+      </div>
+      <div class="campo">
+        <label for="desenvolvedora">DESENVOLVEDORA</label>
+        <input id="desenvolvedora" name="desenvolvedora" type="text" maxlength="120">
+        <p class="erro-campo" data-erro-para="desenvolvedora"></p>
+      </div>
+      <div class="campo">
+        <label for="publicadora">PUBLICADORA</label>
+        <input id="publicadora" name="publicadora" type="text" maxlength="120">
+        <p class="erro-campo" data-erro-para="publicadora"></p>
+      </div>
+      <div class="campo">
+        <label for="descricao">DESCRIÇÃO</label>
+        <textarea id="descricao" name="descricao" rows="4"></textarea>
+        <p class="erro-campo" data-erro-para="descricao"></p>
+      </div>
+      {% if jogo_id %}
+      <button class="botao" type="submit">SALVAR</button>
+      {% else %}
+      <button class="botao" type="button" id="proxima">PRÓXIMO &gt;</button>
+      {% endif %}
+    </fieldset>
+
+    {% if not jogo_id %}
+    <fieldset class="etapa" id="etapa-avaliacao" hidden>
+      <div class="campo">
+        <label for="nota">NOTA (1 A 10)</label>
+        <input id="nota" name="nota" type="number" min="1" max="10" step="1" required>
+        <p class="erro-campo" data-erro-para="nota"></p>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label for="horas">HORAS JOGADAS</label>
+          <input id="horas" name="horas" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="campo">
+          <label for="minutos">MINUTOS</label>
+          <input id="minutos" name="minutos" type="number" min="0" max="59" step="1" value="0">
+        </div>
+      </div>
+      <p class="erro-campo" data-erro-para="tempo_jogado_minutos"></p>
+      <div class="campo">
+        <label for="status">STATUS</label>
+        <select id="status" name="status">
+          <option value="planejado">Planejado</option>
+          <option value="jogando">Jogando</option>
+          <option value="pausado">Pausado</option>
+          <option value="abandonado">Abandonado</option>
+          <option value="concluido" selected>Concluído</option>
+        </select>
+        <p class="erro-campo" data-erro-para="status"></p>
+      </div>
+      <div class="campo">
+        <label for="avaliacao">AVALIAÇÃO</label>
+        <textarea id="avaliacao" name="avaliacao" rows="5" maxlength="2000"></textarea>
+        <p class="erro-campo" data-erro-para="avaliacao"></p>
+      </div>
+      <div class="acoes">
+        <button class="botao" type="submit">SALVAR</button>
+        <button class="botao botao-perigo" type="button" id="voltar">&lt; VOLTAR</button>
+      </div>
+    </fieldset>
+    {% endif %}
+
+    <div class="dialogo" id="dialogo" role="alert" hidden></div>
+  </form>
+
+  <div class="ganho" id="sucesso" role="status" hidden>
+    <p id="sucesso-texto"></p>
+    <div class="acoes">
+      <a class="botao botao-link" id="ver-jogo" href="#">VER JOGO</a>
+      <a class="botao botao-link" href="{% url 'jogo_novo' %}">ADICIONAR OUTRO</a>
+    </div>
+  </div>
+
+  <p class="troca" id="cancelar"><a href="{% url 'jogos' %}">Cancelar</a></p>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static_v 'web/jogo_form.js' %}"></script>{% endblock %}

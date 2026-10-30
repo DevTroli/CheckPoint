@@ -1,0 +1,700 @@
+:root {
+  --fundo: #14121f;
+  --painel: #1f1c30;
+  --borda: #f2e8cf;
+  --texto: #f2e8cf;
+  --suave: #9a93b5;
+  --acento: #e63946;
+  --ouro: #f4a300;
+  --fonte-titulo: "Press Start 2P", monospace;
+  --fonte-corpo: "VT323", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Sem isto, classes com display próprio (.form, .acoes, .botao-link) ignoram o atributo hidden. */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--fonte-corpo);
+  font-size: 1.4rem;
+  line-height: 1.3;
+}
+
+a {
+  color: var(--ouro);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 4px solid var(--borda);
+}
+
+.marca {
+  font-family: var(--fonte-titulo);
+  font-size: 1rem;
+  color: var(--ouro);
+  text-decoration: none;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.menu a {
+  color: var(--texto);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.menu a:hover,
+.menu a:focus-visible {
+  color: var(--ouro);
+}
+
+.conteudo {
+  padding: 2rem 1rem;
+}
+
+h1 {
+  font-family: var(--fonte-titulo);
+  font-weight: 400;
+}
+
+.painel {
+  max-width: 28rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: var(--painel);
+  border: 4px solid var(--borda);
+  box-shadow: 8px 8px 0 var(--acento);
+}
+
+.painel-titulo {
+  margin: 0 0 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ouro);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.campo label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--fonte-titulo);
+  font-size: 0.65rem;
+  color: var(--suave);
+}
+
+.campo input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--fundo);
+  color: var(--texto);
+  border: 4px solid var(--suave);
+  border-radius: 0;
+  font: inherit;
+  font-size: 1.5rem;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: var(--ouro);
+}
+
+.campo input[aria-invalid="true"] {
+  border-color: var(--acento);
+}
+
+.erro-campo {
+  margin: 0.35rem 0 0;
+  min-height: 1.3em;
+  color: var(--acento);
+}
+
+.dialogo {
+  padding: 0.75rem 1rem;
+  background: var(--fundo);
+  border: 4px solid var(--acento);
+  color: var(--texto);
+}
+
+.dialogo::before {
+  content: "> ";
+  color: var(--acento);
+}
+
+.botao {
+  padding: 0.9rem 1rem;
+  background: var(--acento);
+  color: var(--texto);
+  border: 4px solid var(--borda);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--borda);
+  font-family: var(--fonte-titulo);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.botao:hover:not(:disabled),
+.botao:focus-visible {
+  background: var(--ouro);
+  color: var(--fundo);
+  outline: none;
+}
+
+.botao:active:not(:disabled) {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.botao:disabled {
+  background: var(--suave);
+  cursor: wait;
+}
+
+.troca {
+  margin: 1.5rem 0 0;
+  color: var(--suave);
+}
+
+@media (max-width: 30rem) {
+  .topo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .painel {
+    box-shadow: 4px 4px 0 var(--acento);
+  }
+}
+
+/* ---- Catálogo ---- */
+.menu-usuario {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.jogador {
+  color: var(--ouro);
+}
+
+.link-botao {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--texto);
+  font: inherit;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.link-botao:hover,
+.link-botao:focus-visible {
+  color: var(--ouro);
+}
+
+.pagina {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.pagina-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.pagina-titulo {
+  font-size: 1.1rem;
+  color: var(--ouro);
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--fundo);
+  color: var(--texto);
+  border: 4px solid var(--suave);
+  border-radius: 0;
+  font: inherit;
+  font-size: 1.5rem;
+}
+
+/* Mesma altura para input (inclusive type=search) e select, que calculam a altura de forma diferente. */
+.campo input,
+.campo select {
+  height: 3.4rem;
+}
+
+.campo input[type="search"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: var(--ouro);
+}
+
+.campo textarea {
+  resize: vertical;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cartao {
+  background: var(--painel);
+  border: 4px solid var(--borda);
+  box-shadow: 6px 6px 0 var(--acento);
+}
+
+.cartao:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0 var(--ouro);
+}
+
+.cartao-link {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  height: 100%;
+  padding: 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cartao-corpo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cartao-nome {
+  margin: 0.75rem 0 0.5rem;
+  font-family: var(--fonte-titulo);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.cartao-meta {
+  margin: 0;
+  color: var(--suave);
+}
+
+.tag {
+  display: inline-block;
+  margin: 0;
+  padding: 0.1rem 0.5rem;
+  background: var(--ouro);
+  color: var(--fundo);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.vazio {
+  padding: 2rem 0;
+  text-align: center;
+  font-family: var(--fonte-titulo);
+  font-size: 0.8rem;
+  color: var(--suave);
+}
+
+.painel-largo {
+  max-width: 44rem;
+}
+
+.ficha {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.5rem;
+  margin: 1.25rem 0;
+}
+
+.ficha dt {
+  font-family: var(--fonte-titulo);
+  font-size: 0.6rem;
+  color: var(--suave);
+  align-self: center;
+}
+
+.ficha dd {
+  margin: 0;
+}
+
+.descricao {
+  white-space: pre-wrap;
+}
+
+.acoes {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.25rem;
+}
+
+.botao-link {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.botao-perigo {
+  background: var(--fundo);
+  border-color: var(--acento);
+  box-shadow: 4px 4px 0 var(--acento);
+}
+
+@media (max-width: 40rem) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Avaliação pessoal ---- */
+.cartao-tempo {
+  margin: 0.75rem 0 0;
+  color: var(--ouro);
+}
+
+.caixa-nota {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: #000;
+  border: 4px solid var(--ouro);
+  color: var(--ouro);
+}
+
+.caixa-nota-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.cartao-texto {
+  margin: 0.5rem 0 0;
+  color: var(--texto);
+}
+
+.cartao-avaliar {
+  margin: 0.75rem 0 0;
+  font-family: var(--fonte-titulo);
+  font-size: 0.6rem;
+  color: var(--acento);
+}
+
+.campo-duplo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+#minha-avaliacao {
+  margin-top: 2rem;
+}
+
+/* ---- Gamificação ---- */
+.placar-mini {
+  padding: 0.1rem 0.5rem;
+  border: 2px solid var(--ouro);
+  color: var(--ouro);
+  white-space: nowrap;
+}
+
+.placar-mini:empty {
+  display: none;
+}
+
+.ganho {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--fundo);
+  border: 4px solid var(--ouro);
+  box-shadow: 4px 4px 0 var(--ouro);
+  font-family: var(--fonte-titulo);
+  font-size: 0.8rem;
+  color: var(--ouro);
+}
+
+.voce {
+  margin: 1rem 0;
+  font-family: var(--fonte-titulo);
+  font-size: 0.7rem;
+  line-height: 1.8;
+  color: var(--ouro);
+}
+
+.tabela {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-collapse: collapse;
+  background: var(--painel);
+  border: 4px solid var(--borda);
+}
+
+.tabela th {
+  padding: 0.75rem;
+  text-align: left;
+  font-family: var(--fonte-titulo);
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: var(--suave);
+  border-bottom: 4px solid var(--borda);
+}
+
+.tabela td {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 2px solid var(--suave);
+}
+
+.tabela tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Posição e XP ocupam só o necessário; o nome do jogador fica com o resto. */
+.tabela th:first-child,
+.tabela td:first-child {
+  width: 4rem;
+}
+
+.tabela th:last-child,
+.tabela td:last-child {
+  width: 8rem;
+  text-align: right;
+}
+
+.tabela .destaque td {
+  background: var(--fundo);
+  color: var(--ouro);
+}
+
+.regras {
+  margin: 2rem 0 0;
+}
+
+.regras ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* ---- Formulário em etapas ---- */
+.etapas {
+  display: flex;
+  gap: 1rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.etapa-marca {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 4px solid var(--suave);
+  color: var(--suave);
+  font-family: var(--fonte-titulo);
+  font-size: 0.6rem;
+  line-height: 1.6;
+}
+
+.etapa-marca.feita {
+  border-color: var(--texto);
+  color: var(--texto);
+}
+
+.etapa-marca.ativa {
+  border-color: var(--ouro);
+  color: var(--ouro);
+}
+
+.etapa {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Placar em caixa alta, como nos fliperamas antigos (só exibição; os dados não mudam). */
+.placar {
+  text-transform: uppercase;
+}
+
+/* ---- Página inicial: tela de abertura ---- */
+.abertura {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: calc(100vh - 9rem); /* descontando o cabeçalho (~4rem) e o padding de .conteudo (4rem) */
+}
+
+.abertura-textos {
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+}
+
+.abertura-textos h1 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.75rem, 7vw, 3.5rem); /* 56px no desktop; encolhe em telas estreitas */
+  line-height: 1.4;
+  color: var(--texto);
+}
+
+.abertura-textos p {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.carregando {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding-bottom: 1rem;
+  text-align: center;
+}
+
+.carregando-texto {
+  margin: 0 0 1rem;
+  font-family: var(--fonte-titulo);
+  font-size: 0.8rem;
+  color: var(--texto);
+  animation: flutuar 1.4s ease-in-out infinite;
+}
+
+/* LOADING fica centralizado; os pontos "penduram" à direita sem empurrar a palavra. */
+.rotulo {
+  position: relative;
+  display: inline-block;
+}
+
+.pontos {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 0; /* a animação revela 0, 1, 2 e 3 pontos; a fonte é monoespaçada */
+  overflow: hidden;
+  white-space: nowrap;
+  animation: pontos 2s step-end infinite;
+}
+
+/* "", ".", "..", "..." e volta ao começo sem pontos (cada passo dura meio segundo). */
+@keyframes pontos {
+  0% {
+    width: 0;
+  }
+  25% {
+    width: 1ch;
+  }
+  50% {
+    width: 2ch;
+  }
+  75% {
+    width: 3ch;
+  }
+}
+
+/* Sobe e desce só alguns pixels. */
+@keyframes flutuar {
+  0%,
+  100% {
+    transform: translateY(-3px);
+  }
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+/* Barra travada em 75%: a largura é fixa, sem animação. */
+.barra {
+  height: 2rem;
+  padding: 4px;
+  background: #000;
+  border: 4px solid var(--borda);
+}
+
+.barra-preenchimento {
+  width: 75%;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, var(--acento) 0 12px, transparent 12px 16px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carregando-texto {
+    animation: none;
+  }
+
+  .pontos {
+    animation: none;
+    width: 3ch;
+  }
+}
+
+/* Seta discreta no canto da abertura, levando ao catálogo. */
+.seta {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 1rem;
+  color: var(--suave);
+  line-height: 0;
+  transition: color 0.1s steps(2), transform 0.1s steps(2);
+}
+
+.seta:hover,
+.seta:focus-visible {
+  color: var(--ouro);
+  transform: translateX(4px);
+  outline: none;
+}
+
+@media (max-width: 36rem) {
+  /* Em telas estreitas a barra ocupa a largura toda; a seta sobe para não ficar em cima dela. */
+  .seta {
+    bottom: 6rem;
+  }
+}

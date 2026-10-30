@@ -18,8 +18,11 @@ def indice_nome_usuario(nome: str) -> str:
     return f"indice:usuario:nome:{nome.strip().lower()}"
 
 
-def indice_nome_jogo(nome: str) -> str:
-    return f"indice:jogo:nome:{nome.strip().lower()}"
+def indice_nome_jogo(nome: str, dono_id: int | None = None) -> str:
+    # Jogos com dono têm nome único por dono; sem dono, vale o índice global antigo.
+    if dono_id is None:
+        return f"indice:jogo:nome:{nome.strip().lower()}"
+    return f"indice:jogo:dono:{dono_id}:nome:{nome.strip().lower()}"
 
 
 def registros_do_usuario(usuario_id: int) -> str:
