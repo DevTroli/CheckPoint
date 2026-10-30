@@ -15,15 +15,21 @@
     return limpo.length > 90 ? limpo.slice(0, 90).trimEnd() + "..." : limpo;
   }
 
-  function blocoAvaliacao(jogo) {
-    const registro = registros.get(jogo.id);
+  /* Caixa quadrada à direita do card com a nota do usuário. */
+  function caixaNota(registro) {
+    const nota = Number(registro.nota);
+    return Checkpoint.el(
+      "div",
+      { class: "caixa-nota", "aria-label": nota > 0 ? "Nota " + nota + " de 10" : "Sem nota" },
+      Checkpoint.el("span", { class: "caixa-nota-valor" }, nota > 0 ? String(nota) : "-"),
+      Checkpoint.el("span", { class: "caixa-nota-max" }, "/10")
+    );
+  }
+
+  function detalhesAvaliacao(registro) {
     if (registro) {
       const filhos = [
-        Checkpoint.el(
-          "p",
-          { class: "cartao-nota" },
-          Checkpoint.formatarNota(registro.nota) + " | " + Checkpoint.formatarTempo(registro.tempo_jogado_minutos)
-        ),
+        Checkpoint.el("p", { class: "cartao-tempo" }, Checkpoint.formatarTempo(registro.tempo_jogado_minutos)),
       ];
       if (registro.avaliacao) {
         filhos.push(Checkpoint.el("p", { class: "cartao-texto" }, trecho(registro.avaliacao)));
@@ -34,20 +40,23 @@
   }
 
   function cartao(jogo) {
+    const registro = registros.get(jogo.id);
     const meta = [Checkpoint.ano(jogo.data_lancamento), jogo.desenvolvedora]
       .filter(Boolean)
       .join(" | ");
+    const corpo = Checkpoint.el(
+      "div",
+      { class: "cartao-corpo" },
+      Checkpoint.el("span", { class: "tag" }, jogo.categoria),
+      Checkpoint.el("h2", { class: "cartao-nome" }, jogo.nome),
+      Checkpoint.el("p", { class: "cartao-meta" }, meta),
+      ...detalhesAvaliacao(registro)
+    );
+    const filhos = registro ? [corpo, caixaNota(registro)] : [corpo];
     return Checkpoint.el(
       "li",
       { class: "cartao" },
-      Checkpoint.el(
-        "a",
-        { class: "cartao-link", href: "/jogos/" + jogo.id + "/" },
-        Checkpoint.el("span", { class: "tag" }, jogo.categoria),
-        Checkpoint.el("h2", { class: "cartao-nome" }, jogo.nome),
-        Checkpoint.el("p", { class: "cartao-meta" }, meta),
-        ...blocoAvaliacao(jogo)
-      )
+      Checkpoint.el("a", { class: "cartao-link", href: "/jogos/" + jogo.id + "/" }, ...filhos)
     );
   }
 
