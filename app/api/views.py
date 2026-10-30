@@ -56,9 +56,9 @@ def usuario_da_sessao(request):
 
 
 def jogo_acessivel(usuario: dict, jogo_id: int) -> dict:
-    """Devolve o jogo se for do usuário (ou se for admin); senão, 'não encontrado'."""
+    """Devolve o jogo se for do usuário (inclusive admin); senão, 'não encontrado'."""
     jogo = repositorios()[1].buscar_por_id(jogo_id)
-    if usuario.get("papel") != "admin" and jogo.get("dono_id") != usuario["id"]:
+    if jogo.get("dono_id") != usuario["id"]:
         raise RecursoNaoEncontrado("Jogo não encontrado.")
     return jogo
 
@@ -150,9 +150,7 @@ class UsuarioAtualView(APIView):
 class JogosView(APIView):
     @exigir_login
     def get(self, request):
-        usuario = request.usuario_atual
-        dono_id = None if usuario.get("papel") == "admin" else usuario["id"]
-        jogos = repositorios()[1].listar(dono_id=dono_id)
+        jogos = repositorios()[1].listar(dono_id=request.usuario_atual["id"])
         busca = request.query_params.get("busca", "").strip().lower()
         categoria = request.query_params.get("categoria", "").strip().lower()
         if busca:

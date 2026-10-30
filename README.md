@@ -56,7 +56,7 @@ DJANGO_SECRET_KEY=uma-chave-local
 
 ## Fluxo principal da API
 
-O primeiro usuário cadastrado recebe o papel `admin`, que enxerga e gerencia os jogos de todos os usuários.
+O primeiro usuário cadastrado recebe o papel `admin`. Os jogos são privados: nem o admin enxerga os jogos de outros usuários.
 
 ### Cadastro e login
 
@@ -95,7 +95,7 @@ PUT    /api/jogos/{id}/
 DELETE /api/jogos/{id}/
 ```
 
-Todas as rotas exigem login. Cada usuário cadastra os próprios jogos e só enxerga, edita e exclui os que criou (o jogo guarda o `dono_id`). O nome do jogo é único por usuário. O admin enxerga e gerencia todos. Só é possível avaliar um jogo que você enxerga. A listagem aceita filtros simples:
+Todas as rotas exigem login. Cada usuário cadastra os próprios jogos e só enxerga, edita e exclui os que criou (o jogo guarda o `dono_id`). O nome do jogo é único por usuário. Só é possível avaliar um jogo que você enxerga. A listagem aceita filtros simples:
 
 ```text
 /api/jogos/?busca=zelda

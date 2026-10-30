@@ -65,13 +65,20 @@ def test_jogo_so_aparece_para_o_dono(cenario):
     assert cenario["bia"].get(f"/api/jogos/{jogo_id}/").status_code == 404
 
 
-def test_admin_enxerga_todos_os_jogos(cenario):
-    criar_jogo(cenario["ana"])
-    criar_jogo(cenario["bia"], nome="Hades")
+def test_admin_tambem_so_enxerga_os_proprios_jogos(cenario):
+    criar_jogo(cenario["admin"], nome="Do admin")
+    jogo_da_ana = criar_jogo(cenario["ana"]).json()["id"]
+    corpo = {"nome": "Outro nome"}
 
-    nomes = {j["nome"] for j in cenario["admin"].get("/api/jogos/").json()}
+    nomes = [j["nome"] for j in cenario["admin"].get("/api/jogos/").json()]
 
-    assert nomes == {"Celeste", "Hades"}
+    assert nomes == ["Do admin"]
+    assert cenario["admin"].get(f"/api/jogos/{jogo_da_ana}/").status_code == 404
+    assert cenario["admin"].put(f"/api/jogos/{jogo_da_ana}/", corpo, content_type="application/json").status_code == 404
+    assert cenario["admin"].delete(f"/api/jogos/{jogo_da_ana}/").status_code == 404
+    assert cenario["admin"].post(
+        "/api/registros/", {"jogo_id": jogo_da_ana, "nota": 7}, content_type="application/json"
+    ).status_code == 404
 
 
 def test_outro_usuario_nao_edita_nem_exclui(cenario):
