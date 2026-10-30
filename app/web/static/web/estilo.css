@@ -51,6 +51,7 @@ a {
 
 .menu {
   display: flex;
+  align-items: center;
   gap: 1.5rem;
 }
 
@@ -248,6 +249,17 @@ h1 {
   border-radius: 0;
   font: inherit;
   font-size: 1.5rem;
+}
+
+/* Mesma altura para input (inclusive type=search) e select, que calculam a altura de forma diferente. */
+.campo input,
+.campo select {
+  height: 3.4rem;
+}
+
+.campo input[type="search"] {
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .campo select:focus,
@@ -481,6 +493,18 @@ h1 {
 
 .tabela tr:last-child td {
   border-bottom: 0;
+}
+
+/* Posição e XP ocupam só o necessário; o nome do jogador fica com o resto. */
+.tabela th:first-child,
+.tabela td:first-child {
+  width: 4rem;
+}
+
+.tabela th:last-child,
+.tabela td:last-child {
+  width: 8rem;
+  text-align: right;
 }
 
 .tabela .destaque td {
