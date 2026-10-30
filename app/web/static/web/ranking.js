@@ -5,10 +5,11 @@
   const voce = document.getElementById("voce");
   const dialogo = document.getElementById("dialogo");
 
-  /* O ranking da API só traz usuario_id; só o nome do próprio usuário é conhecido. */
   function linha(item, usuario) {
     const souEu = usuario && item.usuario_id === usuario.id;
-    const nome = souEu ? usuario.nome_usuario + " (VOCÊ)" : "JOGADOR #" + item.usuario_id;
+    // nome_usuario vem vazio se a conta foi excluída; aí cai no número.
+    const nomeBase = item.nome_usuario || "JOGADOR #" + item.usuario_id;
+    const nome = souEu ? nomeBase + " (VOCÊ)" : nomeBase;
     return Checkpoint.el(
       "tr",
       souEu ? { class: "destaque" } : {},

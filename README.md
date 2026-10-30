@@ -130,7 +130,7 @@ A gamificação foi mantida intencionalmente simples:
 - dias consecutivos aumentam o streak;
 - a mesma atividade não concede XP duas vezes no mesmo dia.
 
-O XP é acumulado com `ZINCRBY` e o ranking é consultado com `ZRANGE` em ordem decrescente.
+O XP é acumulado com `ZINCRBY` e o ranking é consultado com `ZRANGE` em ordem decrescente. O ranking é público e traz o `nome_usuario` de cada jogador (o e-mail nunca é exposto).
 
 ## Conferindo os dados no Redis
 

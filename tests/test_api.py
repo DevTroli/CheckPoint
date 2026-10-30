@@ -83,6 +83,8 @@ def test_fluxo_de_usuario_jogo_registro_e_gamificacao(api):
     ranking = usuario_client.get("/api/gamificacao/ranking/")
     assert ranking.status_code == 200
     assert ranking.json()[0]["usuario_id"] == usuario["id"]
+    assert ranking.json()[0]["nome_usuario"] == "jogador"
+    assert "email" not in ranking.json()[0]
     assert api.zscore("ranking:xp", f"usuario:{usuario['id']}") == 30
 
 
