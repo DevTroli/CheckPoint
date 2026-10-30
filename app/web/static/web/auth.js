@@ -21,7 +21,7 @@
         senha: campos.senha,
       });
       if (!login.ok) return Checkpoint.mostrarErro(form, dialogo, login);
-      window.location.href = "/jogos/";
+      window.location.href = "/";
     } catch (e) {
       Checkpoint.mostrarDialogo(dialogo, "Sem conexão com o servidor.");
     } finally {

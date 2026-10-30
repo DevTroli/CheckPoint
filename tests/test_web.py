@@ -63,6 +63,20 @@ def test_pagina_inicial_tem_tela_de_loading_travada_em_75():
     assert "@keyframes flutuar" in css and "width: 75%" in css
 
 
+def test_pagina_inicial_tem_seta_para_o_catalogo():
+    html = Client().get("/").content.decode()
+
+    assert '<a class="seta" href="/jogos/"' in html
+
+
+def test_login_e_cadastro_redirecionam_para_a_pagina_inicial():
+    # Sem runner de JS no projeto: garante, ao menos, o destino do redirecionamento.
+    js = Path("app/web/static/web/auth.js").read_text(encoding="utf-8")
+
+    assert 'window.location.href = "/";' in js
+    assert 'window.location.href = "/jogos/"' not in js
+
+
 def test_loading_tem_pontos_animados():
     html = Client().get("/").content.decode()
     css = Path("app/web/static/web/estilo.css").read_text(encoding="utf-8")

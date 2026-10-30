@@ -567,6 +567,7 @@ h1 {
 
 /* ---- Página inicial: tela de abertura ---- */
 .abertura {
+  position: relative;
   display: grid;
   grid-template-rows: 1fr auto;
   min-height: calc(100vh - 9rem); /* descontando o cabeçalho (~4rem) e o padding de .conteudo (4rem) */
@@ -671,5 +672,29 @@ h1 {
   .pontos {
     animation: none;
     width: 3ch;
+  }
+}
+
+/* Seta discreta no canto da abertura, levando ao catálogo. */
+.seta {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 1rem;
+  color: var(--suave);
+  line-height: 0;
+  transition: color 0.1s steps(2), transform 0.1s steps(2);
+}
+
+.seta:hover,
+.seta:focus-visible {
+  color: var(--ouro);
+  transform: translateX(4px);
+  outline: none;
+}
+
+@media (max-width: 36rem) {
+  /* Em telas estreitas a barra ocupa a largura toda; a seta sobe para não ficar em cima dela. */
+  .seta {
+    bottom: 6rem;
   }
 }
