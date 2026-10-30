@@ -606,6 +606,35 @@ h1 {
   animation: flutuar 1.4s ease-in-out infinite;
 }
 
+/* LOADING fica centralizado; os pontos "penduram" à direita sem empurrar a palavra. */
+.rotulo {
+  position: relative;
+  display: inline-block;
+}
+
+.pontos {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 1ch; /* a animação revela 1, 2 e 3 pontos; a fonte é monoespaçada */
+  overflow: hidden;
+  white-space: nowrap;
+  animation: pontos 1.5s step-end infinite;
+}
+
+/* ".", "..", "..." e volta ao começo (cada passo dura um terço do ciclo). */
+@keyframes pontos {
+  0% {
+    width: 1ch;
+  }
+  33.33% {
+    width: 2ch;
+  }
+  66.66% {
+    width: 3ch;
+  }
+}
+
 /* Sobe e desce só alguns pixels. */
 @keyframes flutuar {
   0%,
@@ -634,5 +663,10 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .carregando-texto {
     animation: none;
+  }
+
+  .pontos {
+    animation: none;
+    width: 3ch;
   }
 }

@@ -63,6 +63,14 @@ def test_pagina_inicial_tem_tela_de_loading_travada_em_75():
     assert "@keyframes flutuar" in css and "width: 75%" in css
 
 
+def test_loading_tem_pontos_animados():
+    html = Client().get("/").content.decode()
+    css = Path("app/web/static/web/estilo.css").read_text(encoding="utf-8")
+
+    assert 'class="pontos"' in html
+    assert "@keyframes pontos" in css
+
+
 def test_catalogo_nao_tem_filtro_exibir():
     # Todo jogo visível já é do usuário, então não há o que alternar.
     html = Client().get("/jogos/").content.decode()
