@@ -580,10 +580,9 @@ h1 {
 
 .abertura-textos h1 {
   margin: 0 0 1.5rem;
-  font-size: 2rem;
+  font-size: clamp(1.75rem, 7vw, 3.5rem); /* 56px no desktop; encolhe em telas estreitas */
   line-height: 1.4;
-  color: var(--ouro);
-  text-transform: uppercase;
+  color: var(--texto);
 }
 
 .abertura-textos p {
