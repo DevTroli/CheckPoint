@@ -1,5 +1,5 @@
 {% extends "web/base.html" %}
-{% load static %}
+{% load versao %}
 
 {% block titulo %}{% if jogo_id %}Editar jogo{% else %}Novo jogo{% endif %} | Checkpoint{% endblock %}
 
@@ -109,4 +109,4 @@
 </section>
 {% endblock %}
 
-{% block scripts %}<script src="{% static 'web/jogo_form.js' %}"></script>{% endblock %}
+{% block scripts %}<script src="{% static_v 'web/jogo_form.js' %}"></script>{% endblock %}

@@ -1,5 +1,5 @@
 {% extends "web/base.html" %}
-{% load static %}
+{% load versao %}
 
 {% block titulo %}Ranking | Checkpoint{% endblock %}
 
@@ -30,4 +30,4 @@
 </section>
 {% endblock %}
 
-{% block scripts %}<script src="{% static 'web/ranking.js' %}"></script>{% endblock %}
+{% block scripts %}<script src="{% static_v 'web/ranking.js' %}"></script>{% endblock %}

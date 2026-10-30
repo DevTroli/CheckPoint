@@ -1,5 +1,5 @@
 {% extends "web/base.html" %}
-{% load static %}
+{% load versao %}
 
 {% block titulo %}Catálogo | Checkpoint{% endblock %}
 
@@ -39,4 +39,4 @@
 </section>
 {% endblock %}
 
-{% block scripts %}<script src="{% static 'web/jogos.js' %}"></script>{% endblock %}
+{% block scripts %}<script src="{% static_v 'web/jogos.js' %}"></script>{% endblock %}

@@ -1,5 +1,5 @@
 {% extends "web/base.html" %}
-{% load static %}
+{% load versao %}
 
 {% block titulo %}Entrar | Checkpoint{% endblock %}
 
@@ -24,4 +24,4 @@
 </section>
 {% endblock %}
 
-{% block scripts %}<script src="{% static 'web/auth.js' %}"></script>{% endblock %}
+{% block scripts %}<script src="{% static_v 'web/auth.js' %}"></script>{% endblock %}

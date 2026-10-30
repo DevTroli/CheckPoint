@@ -69,6 +69,34 @@ def test_pagina_inicial_tem_seta_para_o_catalogo():
     assert '<a class="seta" href="/jogos/"' in html
 
 
+@pytest.mark.parametrize(
+    "caminho, arquivos",
+    [
+        ("/", ["estilo.css", "api.js", "nav.js"]),
+        ("/entrar/", ["auth.js"]),
+        ("/cadastrar/", ["auth.js"]),
+        ("/jogos/", ["jogos.js"]),
+        ("/jogos/7/", ["jogo_detalhe.js", "avaliacao.js"]),
+        ("/jogos/novo/", ["jogo_form.js"]),
+        ("/ranking/", ["ranking.js"]),
+    ],
+)
+def test_estaticos_levam_versao_para_nao_ficar_em_cache(caminho, arquivos):
+    # Sem versão, o navegador reaproveita JS/CSS antigo (ex.: redirecionar para a página errada).
+    import re
+
+    html = Client().get(caminho).content.decode()
+
+    for arquivo in arquivos:
+        assert re.search(rf"/static/web/{re.escape(arquivo)}\?v=\d+", html), arquivo
+
+
+def test_static_v_nao_quebra_com_arquivo_inexistente():
+    from app.web.templatetags.versao import static_v
+
+    assert static_v("web/nao-existe.css") == "/static/web/nao-existe.css"
+
+
 def test_login_e_cadastro_redirecionam_para_a_pagina_inicial():
     # Sem runner de JS no projeto: garante, ao menos, o destino do redirecionamento.
     js = Path("app/web/static/web/auth.js").read_text(encoding="utf-8")
