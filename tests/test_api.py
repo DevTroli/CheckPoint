@@ -48,7 +48,12 @@ def test_fluxo_de_usuario_jogo_registro_e_gamificacao(api):
     assert admin["papel"] == "admin"
     login(admin_client, "admin@example.com")
 
-    jogo_resposta = admin_client.post(
+    usuario_client = Client()
+    usuario = cadastrar(usuario_client, "jogador", "jogador@example.com")
+    login(usuario_client, "jogador@example.com")
+
+    # Cada usuário cadastra os próprios jogos (privados) e depois os avalia.
+    jogo_resposta = usuario_client.post(
         "/api/jogos/",
         {
             "nome": "Celeste",
@@ -60,11 +65,8 @@ def test_fluxo_de_usuario_jogo_registro_e_gamificacao(api):
         content_type="application/json",
     )
     assert jogo_resposta.status_code == 201
+    assert jogo_resposta.json()["dono_id"] == usuario["id"]
     jogo_id = jogo_resposta.json()["id"]
-
-    usuario_client = Client()
-    usuario = cadastrar(usuario_client, "jogador", "jogador@example.com")
-    login(usuario_client, "jogador@example.com")
 
     registro_resposta = usuario_client.post(
         "/api/registros/",
