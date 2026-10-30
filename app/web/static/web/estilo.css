@@ -403,12 +403,6 @@ h1 {
   line-height: 1;
 }
 
-.caixa-nota-max {
-  margin-top: 0.35rem;
-  font-size: 1.1rem;
-  line-height: 1;
-}
-
 .cartao-texto {
   margin: 0.5rem 0 0;
   color: var(--texto);

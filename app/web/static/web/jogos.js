@@ -21,8 +21,7 @@
     return Checkpoint.el(
       "div",
       { class: "caixa-nota", "aria-label": nota > 0 ? "Nota " + nota + " de 10" : "Sem nota" },
-      Checkpoint.el("span", { class: "caixa-nota-valor" }, nota > 0 ? String(nota) : "-"),
-      Checkpoint.el("span", { class: "caixa-nota-max" }, "/10")
+      Checkpoint.el("span", { class: "caixa-nota-valor" }, nota > 0 ? String(nota) : "-")
     );
   }
 
