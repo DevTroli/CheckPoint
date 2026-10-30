@@ -616,21 +616,24 @@ h1 {
   position: absolute;
   top: 0;
   left: 100%;
-  width: 1ch; /* a animação revela 1, 2 e 3 pontos; a fonte é monoespaçada */
+  width: 0; /* a animação revela 0, 1, 2 e 3 pontos; a fonte é monoespaçada */
   overflow: hidden;
   white-space: nowrap;
-  animation: pontos 1.5s step-end infinite;
+  animation: pontos 2s step-end infinite;
 }
 
-/* ".", "..", "..." e volta ao começo (cada passo dura um terço do ciclo). */
+/* "", ".", "..", "..." e volta ao começo sem pontos (cada passo dura meio segundo). */
 @keyframes pontos {
   0% {
+    width: 0;
+  }
+  25% {
     width: 1ch;
   }
-  33.33% {
+  50% {
     width: 2ch;
   }
-  66.66% {
+  75% {
     width: 3ch;
   }
 }
