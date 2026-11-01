@@ -1,0 +1,27 @@
+{% extends "web/base.html" %}
+{% load versao %}
+
+{% block titulo %}Entrar | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="painel">
+  <h1 class="painel-titulo">CONTINUAR JOGO</h1>
+  <form id="form-auth" class="form" data-acao="login" novalidate>
+    <div class="campo">
+      <label for="email">E-MAIL</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+      <p class="erro-campo" data-erro-para="email"></p>
+    </div>
+    <div class="campo">
+      <label for="senha">SENHA</label>
+      <input id="senha" name="senha" type="password" autocomplete="current-password" required>
+      <p class="erro-campo" data-erro-para="senha"></p>
+    </div>
+    <div class="dialogo" id="dialogo" role="alert" hidden></div>
+    <button class="botao" type="submit">PRESS START</button>
+  </form>
+  <p class="troca">Novo por aqui? <a href="{% url 'cadastrar' %}">Criar personagem</a></p>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static_v 'web/auth.js' %}"></script>{% endblock %}

@@ -55,6 +55,14 @@ def usuario_da_sessao(request):
         return None
 
 
+def jogo_acessivel(usuario: dict, jogo_id: int) -> dict:
+    """Devolve o jogo se for do usuário (inclusive admin); senão, 'não encontrado'."""
+    jogo = repositorios()[1].buscar_por_id(jogo_id)
+    if jogo.get("dono_id") != usuario["id"]:
+        raise RecursoNaoEncontrado("Jogo não encontrado.")
+    return jogo
+
+
 def exigir_login(view):
     @wraps(view)
     def wrapper(self, request, *args, **kwargs):
@@ -140,8 +148,9 @@ class UsuarioAtualView(APIView):
 
 
 class JogosView(APIView):
+    @exigir_login
     def get(self, request):
-        jogos = repositorios()[1].listar()
+        jogos = repositorios()[1].listar(dono_id=request.usuario_atual["id"])
         busca = request.query_params.get("busca", "").strip().lower()
         categoria = request.query_params.get("categoria", "").strip().lower()
         if busca:
@@ -153,38 +162,41 @@ class JogosView(APIView):
             jogos.sort(key=lambda jogo: jogo[ordenacao].lower())
         return Response(jogos)
 
-    @exigir_admin
+    @exigir_login
     def post(self, request):
         serializer = JogoSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         try:
-            jogo = repositorios()[1].criar(**serializer.validated_data)
+            jogo = repositorios()[1].criar(dono_id=request.usuario_atual["id"], **serializer.validated_data)
             return Response(jogo, status=status.HTTP_201_CREATED)
         except Exception as erro:
             return tratar_erro(erro)
 
 
 class JogoDetalheView(APIView):
+    @exigir_login
     def get(self, request, jogo_id):
         try:
-            return Response(repositorios()[1].buscar_por_id(jogo_id))
+            return Response(jogo_acessivel(request.usuario_atual, jogo_id))
         except Exception as erro:
             return tratar_erro(erro)
 
-    @exigir_admin
+    @exigir_login
     def put(self, request, jogo_id):
         serializer = JogoSerializer(data=request.data, partial=True)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         try:
+            jogo_acessivel(request.usuario_atual, jogo_id)
             return Response(repositorios()[1].atualizar(jogo_id, **serializer.validated_data))
         except Exception as erro:
             return tratar_erro(erro)
 
-    @exigir_admin
+    @exigir_login
     def delete(self, request, jogo_id):
         try:
+            jogo_acessivel(request.usuario_atual, jogo_id)
             repositorios()[1].excluir(jogo_id)
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as erro:
@@ -203,6 +215,7 @@ class RegistrosView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         try:
+            jogo_acessivel(request.usuario_atual, serializer.validated_data["jogo_id"])
             registro = repositorios()[2].criar(usuario_id=request.usuario_atual["id"], **serializer.validated_data)
             gamificacao.registrar_atividade(cliente_redis, request.usuario_atual["id"])
             dados_gamificacao = gamificacao.conceder_xp(cliente_redis, request.usuario_atual["id"], gamificacao.XP_REGISTRO_CRIADO)

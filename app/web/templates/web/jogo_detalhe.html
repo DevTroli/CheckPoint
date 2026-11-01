@@ -1,0 +1,110 @@
+{% extends "web/base.html" %}
+{% load versao %}
+
+{% block titulo %}Jogo | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="pagina" id="detalhe" data-jogo-id="{{ jogo_id }}">
+  <p><a href="{% url 'jogos' %}">&lt; Voltar ao catálogo</a></p>
+  <div class="dialogo" id="dialogo" role="alert" hidden></div>
+
+  <article id="jogo" class="painel painel-largo" hidden>
+    <h1 class="painel-titulo" id="jogo-nome"></h1>
+    <p class="tag" id="jogo-categoria"></p>
+    <dl class="ficha">
+      <dt>LANÇAMENTO</dt><dd id="jogo-ano"></dd>
+      <dt>DESENVOLVEDORA</dt><dd id="jogo-desenvolvedora"></dd>
+      <dt>PUBLICADORA</dt><dd id="jogo-publicadora"></dd>
+    </dl>
+    <p id="jogo-descricao" class="descricao"></p>
+
+    <div id="acoes-jogo" class="acoes" hidden>
+      <a class="botao botao-link" id="editar" href="#">EDITAR</a>
+      <button class="botao botao-perigo" id="excluir" type="button">EXCLUIR</button>
+    </div>
+
+    <div id="confirmar" class="dialogo" hidden>
+      <p>EXCLUIR ESTE JOGO E A SUA AVALIAÇÃO PARA SEMPRE?</p>
+      <div class="acoes">
+        <button class="botao botao-perigo" id="confirmar-sim" type="button">SIM</button>
+        <button class="botao" id="confirmar-nao" type="button">NÃO</button>
+      </div>
+    </div>
+  </article>
+
+  <article id="minha-avaliacao" class="painel painel-largo" hidden>
+    <h2 class="painel-titulo">MINHA AVALIAÇÃO</h2>
+
+    <div class="ganho" id="ganho" role="status" hidden></div>
+
+    <p id="avaliacao-login" hidden>
+      <a href="{% url 'entrar' %}">Entre</a> para avaliar este jogo.
+    </p>
+
+    <div id="avaliacao-resumo" hidden>
+      <dl class="ficha">
+        <dt>NOTA</dt><dd id="av-nota"></dd>
+        <dt>TEMPO</dt><dd id="av-tempo"></dd>
+        <dt>STATUS</dt><dd id="av-status"></dd>
+      </dl>
+      <p id="av-texto" class="descricao"></p>
+      <div class="acoes">
+        <button class="botao" id="av-editar" type="button">EDITAR</button>
+        <button class="botao botao-perigo" id="av-excluir" type="button">EXCLUIR</button>
+      </div>
+      <div id="av-confirmar" class="dialogo" hidden>
+        <p>EXCLUIR SUA AVALIAÇÃO?</p>
+        <div class="acoes">
+          <button class="botao botao-perigo" id="av-confirmar-sim" type="button">SIM</button>
+          <button class="botao" id="av-confirmar-nao" type="button">NÃO</button>
+        </div>
+      </div>
+    </div>
+
+    <form id="form-avaliacao" class="form" novalidate hidden>
+      <div class="campo">
+        <label for="nota">NOTA (1 A 10)</label>
+        <input id="nota" name="nota" type="number" min="1" max="10" step="1" required>
+        <p class="erro-campo" data-erro-para="nota"></p>
+      </div>
+      <div class="campo-duplo">
+        <div class="campo">
+          <label for="horas">HORAS JOGADAS</label>
+          <input id="horas" name="horas" type="number" min="0" step="1" value="0">
+        </div>
+        <div class="campo">
+          <label for="minutos">MINUTOS</label>
+          <input id="minutos" name="minutos" type="number" min="0" max="59" step="1" value="0">
+        </div>
+      </div>
+      <p class="erro-campo" data-erro-para="tempo_jogado_minutos"></p>
+      <div class="campo">
+        <label for="status">STATUS</label>
+        <select id="status" name="status">
+          <option value="planejado">Planejado</option>
+          <option value="jogando">Jogando</option>
+          <option value="pausado">Pausado</option>
+          <option value="abandonado">Abandonado</option>
+          <option value="concluido" selected>Concluído</option>
+        </select>
+        <p class="erro-campo" data-erro-para="status"></p>
+      </div>
+      <div class="campo">
+        <label for="avaliacao">AVALIAÇÃO</label>
+        <textarea id="avaliacao" name="avaliacao" rows="5" maxlength="2000"></textarea>
+        <p class="erro-campo" data-erro-para="avaliacao"></p>
+      </div>
+      <div class="dialogo" id="dialogo-avaliacao" role="alert" hidden></div>
+      <div class="acoes">
+        <button class="botao" type="submit">SALVAR</button>
+        <button class="botao botao-perigo" id="av-cancelar" type="button" hidden>CANCELAR</button>
+      </div>
+    </form>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static_v 'web/jogo_detalhe.js' %}"></script>
+<script src="{% static_v 'web/avaliacao.js' %}"></script>
+{% endblock %}

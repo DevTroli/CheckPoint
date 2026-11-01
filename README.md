@@ -56,7 +56,7 @@ DJANGO_SECRET_KEY=uma-chave-local
 
 ## Fluxo principal da API
 
-O primeiro usuário cadastrado recebe o papel `admin`. Isso permite criar o catálogo inicial de jogos.
+O primeiro usuário cadastrado recebe o papel `admin`. Os jogos são privados: nem o admin enxerga os jogos de outros usuários.
 
 ### Cadastro e login
 
@@ -95,7 +95,7 @@ PUT    /api/jogos/{id}/
 DELETE /api/jogos/{id}/
 ```
 
-As operações de escrita exigem um usuário administrador. A listagem aceita filtros simples:
+Todas as rotas exigem login. Cada usuário cadastra os próprios jogos e só enxerga, edita e exclui os que criou (o jogo guarda o `dono_id`). O nome do jogo é único por usuário. Só é possível avaliar um jogo que você enxerga. A listagem aceita filtros simples:
 
 ```text
 /api/jogos/?busca=zelda
@@ -130,7 +130,7 @@ A gamificação foi mantida intencionalmente simples:
 - dias consecutivos aumentam o streak;
 - a mesma atividade não concede XP duas vezes no mesmo dia.
 
-O XP é acumulado com `ZINCRBY` e o ranking é consultado com `ZRANGE` em ordem decrescente.
+O XP é acumulado com `ZINCRBY` e o ranking é consultado com `ZRANGE` em ordem decrescente. O ranking é público e traz o `nome_usuario` de cada jogador (o e-mail nunca é exposto).
 
 ## Conferindo os dados no Redis
 

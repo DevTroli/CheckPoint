@@ -1,0 +1,33 @@
+{% extends "web/base.html" %}
+{% load versao %}
+
+{% block titulo %}Ranking | Checkpoint{% endblock %}
+
+{% block conteudo %}
+<section class="pagina placar">
+  <h1 class="pagina-titulo">PLACAR</h1>
+
+  <p id="voce" class="voce" hidden></p>
+  <div class="dialogo" id="dialogo" role="alert" hidden></div>
+  <p id="vazio" class="vazio" hidden>NINGUÉM NO PLACAR AINDA</p>
+
+  <table id="tabela-ranking" class="tabela" hidden>
+    <thead>
+      <tr><th>#</th><th>JOGADOR</th><th>XP</th></tr>
+    </thead>
+    <tbody id="corpo-ranking"></tbody>
+  </table>
+
+  <div class="painel painel-largo regras">
+    <h2 class="painel-titulo">COMO GANHAR XP</h2>
+    <ul>
+      <li>Avaliar um jogo novo: <strong>+25 XP</strong></li>
+      <li>Atualizar uma avaliação: <strong>+5 XP</strong></li>
+      <li>Primeira atividade do dia: <strong>+5 XP</strong></li>
+      <li>Jogar em dias seguidos aumenta o seu <strong>streak</strong></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static_v 'web/ranking.js' %}"></script>{% endblock %}

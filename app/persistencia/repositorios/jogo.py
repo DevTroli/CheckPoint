@@ -14,11 +14,13 @@ class RepositorioJogo:
         self.cliente = cliente
 
     def criar(self, *, nome: str, categoria: str, data_lancamento: str,
-              publicadora: str = "", desenvolvedora: str = "", descricao: str = "") -> dict[str, Any]:
+              publicadora: str = "", desenvolvedora: str = "", descricao: str = "",
+              dono_id: int | None = None) -> dict[str, Any]:
         nome = normalizar_texto(nome)
         if hasattr(data_lancamento, "isoformat"):
             data_lancamento = data_lancamento.isoformat()
-        if self.cliente.exists(chaves.indice_nome_jogo(nome)):
+        indice = chaves.indice_nome_jogo(nome, dono_id)
+        if self.cliente.exists(indice):
             raise RecursoDuplicado("O jogo já está cadastrado.")
         jogo_id = int(self.cliente.incr(chaves.sequencia("jogo")))
         agora = agora_iso()
@@ -33,8 +35,10 @@ class RepositorioJogo:
             "criado_em": agora,
             "atualizado_em": agora,
         }
+        if dono_id is not None:
+            dados["dono_id"] = dono_id
         self.cliente.hset(chaves.jogo(jogo_id), mapping=dados)
-        self.cliente.set(chaves.indice_nome_jogo(nome), jogo_id)
+        self.cliente.set(indice, jogo_id)
         return dados
 
     def buscar_por_id(self, jogo_id: int) -> dict[str, Any]:
@@ -43,18 +47,21 @@ class RepositorioJogo:
             raise RecursoNaoEncontrado("Jogo não encontrado.")
         return converter_hash(dados)
 
-    def buscar_por_nome(self, nome: str) -> dict[str, Any]:
-        jogo_id = self.cliente.get(chaves.indice_nome_jogo(nome))
+    def buscar_por_nome(self, nome: str, dono_id: int | None = None) -> dict[str, Any]:
+        jogo_id = self.cliente.get(chaves.indice_nome_jogo(nome, dono_id))
         if jogo_id is None:
             raise RecursoNaoEncontrado("Jogo não encontrado.")
         return self.buscar_por_id(int(jogo_id))
 
-    def listar(self) -> list[dict[str, Any]]:
+    def listar(self, dono_id: int | None = None) -> list[dict[str, Any]]:
+        """Lista os jogos; com dono_id, apenas os desse dono."""
         ids = self.cliente.scan_iter(match="jogo:*")
         jogos = []
         for chave in ids:
             if chave.count(":") == 1:
-                jogos.append(converter_hash(self.cliente.hgetall(chave)))
+                jogo = converter_hash(self.cliente.hgetall(chave))
+                if dono_id is None or jogo.get("dono_id") == dono_id:
+                    jogos.append(jogo)
         return sorted(jogos, key=lambda item: item["nome"].lower())
 
     def atualizar(self, jogo_id: int, **campos: Any) -> dict[str, Any]:
@@ -65,11 +72,12 @@ class RepositorioJogo:
             alteracoes["data_lancamento"] = alteracoes["data_lancamento"].isoformat()
         if "nome" in alteracoes:
             novo_nome = normalizar_texto(str(alteracoes["nome"]))
-            dono = self.cliente.get(chaves.indice_nome_jogo(novo_nome))
-            if dono and int(dono) != jogo_id:
+            dono_id = atual.get("dono_id")
+            existente = self.cliente.get(chaves.indice_nome_jogo(novo_nome, dono_id))
+            if existente and int(existente) != jogo_id:
                 raise RecursoDuplicado("O jogo já está cadastrado.")
-            self.cliente.delete(chaves.indice_nome_jogo(atual["nome"]))
-            self.cliente.set(chaves.indice_nome_jogo(novo_nome), jogo_id)
+            self.cliente.delete(chaves.indice_nome_jogo(atual["nome"], dono_id))
+            self.cliente.set(chaves.indice_nome_jogo(novo_nome, dono_id), jogo_id)
             alteracoes["nome"] = novo_nome
         if alteracoes:
             alteracoes["atualizado_em"] = agora_iso()
@@ -92,6 +100,6 @@ class RepositorioJogo:
                 )
         self.cliente.delete(
             chaves.jogo(jogo_id),
-            chaves.indice_nome_jogo(jogo["nome"]),
+            chaves.indice_nome_jogo(jogo["nome"], jogo.get("dono_id")),
             chaves.registros_do_jogo(jogo_id),
         )

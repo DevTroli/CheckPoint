@@ -65,8 +65,14 @@ def consultar_gamificacao(cliente: Redis, usuario_id: int) -> dict:
 
 
 def listar_ranking(cliente: Redis, limite: int = 10) -> list[dict]:
+    """Top do ranking. O nome de usuário é público; o e-mail nunca entra aqui."""
     itens = cliente.zrange(CHAVE_RANKING_XP, 0, limite - 1, desc=True, withscores=True)
     return [
-        {"usuario_id": int(membro.split(":")[1]), "xp": int(pontuacao), "posicao": posicao}
+        {
+            "usuario_id": int(membro.split(":")[1]),
+            "nome_usuario": cliente.hget(membro, "nome_usuario"),
+            "xp": int(pontuacao),
+            "posicao": posicao,
+        }
         for posicao, (membro, pontuacao) in enumerate(itens, start=1)
     ]

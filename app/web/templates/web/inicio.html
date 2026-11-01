@@ -1,0 +1,29 @@
+{% extends "web/base.html" %}
+
+{% block conteudo %}
+<section class="abertura">
+  <div class="abertura-textos">
+    <h1>Checkpoint</h1>
+    <p>Seu catálogo pessoal de jogos.</p>
+  </div>
+
+  <div class="carregando">
+    <p class="carregando-texto"><span class="rotulo">LOADING<span class="pontos" aria-hidden="true">...</span></span></p>
+    <div class="barra" role="progressbar" aria-label="Carregando" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75">
+      <div class="barra-preenchimento"></div>
+    </div>
+  </div>
+
+  <a class="seta" href="{% url 'jogos' %}" aria-label="Ir para o catálogo" title="Catálogo">
+    <svg viewBox="0 0 10 7" width="40" height="28" shape-rendering="crispEdges" fill="currentColor" aria-hidden="true">
+      <rect x="6" y="0" width="1" height="1"/>
+      <rect x="6" y="1" width="2" height="1"/>
+      <rect x="0" y="2" width="9" height="1"/>
+      <rect x="0" y="3" width="10" height="1"/>
+      <rect x="0" y="4" width="9" height="1"/>
+      <rect x="6" y="5" width="2" height="1"/>
+      <rect x="6" y="6" width="1" height="1"/>
+    </svg>
+  </a>
+</section>
+{% endblock %}
